@@ -1,0 +1,10 @@
+name = "revenue-essential-virtual-bootcamp"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+[assets]
+directory = "./src"
+
+[[kv_namespaces]]
+binding = "BOOTCAMP_PROGRESS"
+id = "0cca2339129f47c8a4586ca3a83a4aeb"

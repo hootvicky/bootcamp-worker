@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Revenue Essentials Virtual Bootcamp</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f6f6f6; color: #1a1a1a;
+    }
+    .header {
+      background: #f6821f; padding: 20px 40px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .header h1 { color: white; font-size: 22px; font-weight: 700; }
+    .tab-nav {
+      background: white; border-bottom: 2px solid #e8e8e8;
+      display: flex; overflow-x: auto; padding: 0 40px;
+    }
+    .tab-nav button {
+      padding: 16px 20px; border: none; background: none; cursor: pointer;
+      font-size: 14px; font-weight: 500; color: #666; white-space: nowrap;
+      border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s;
+    }
+    .tab-nav button:hover { color: #f6821f; }
+    .tab-nav button.active { color: #f6821f; border-bottom-color: #f6821f; font-weight: 600; }
+    .content { max-width: 1100px; margin: 40px auto; padding: 0 40px; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Home */
+    .home-hero {
+      background: white; border-radius: 12px; padding: 48px; text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 32px;
+    }
+    .home-hero h2 { font-size: 32px; font-weight: 700; margin-bottom: 12px; }
+    .home-hero p { font-size: 16px; color: #666; max-width: 600px; margin: 0 auto 32px; line-height: 1.6; }
+    .module-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+    .module-card {
+      background: white; border-radius: 10px; padding: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06); cursor: pointer;
+      border: 2px solid transparent; transition: all 0.2s; text-align: left;
+    }
+    .module-card:hover { border-color: #f6821f; transform: translateY(-2px); }
+    .module-number { font-size: 12px; font-weight: 600; color: #f6821f; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .module-card h3 { font-size: 16px; font-weight: 600; line-height: 1.4; }
+
+    /* Module header */
+    .module-header { margin-bottom: 24px; }
+    .module-header .tag {
+      display: inline-block; background: #fff3e8; color: #f6821f;
+      font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px;
+      margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;
+    }
+    .module-header h2 { font-size: 28px; font-weight: 700; }
+
+    /* Progress bar */
+    .progress-container {
+      background: white; border-radius: 12px; padding: 24px 32px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 24px;
+    }
+    .progress-label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: #666; margin-bottom: 10px; }
+    .progress-bar-track { background: #f0f0f0; border-radius: 99px; height: 10px; margin-bottom: 16px; }
+    .progress-bar-fill { background: #f6821f; border-radius: 99px; height: 10px; transition: width 0.5s ease; width: 0%; }
+    .progress-steps { display: flex; gap: 16px; flex-wrap: wrap; }
+    .progress-step { font-size: 13px; color: #aaa; display: flex; align-items: center; gap: 6px; }
+    .progress-step.done { color: #22c55e; }
+    .progress-step .dot { width: 10px; height: 10px; border-radius: 50%; background: #ddd; display: inline-block; }
+    .progress-step.done .dot { background: #22c55e; }
+
+    /* Section card */
+    .section-card { background: white; border-radius: 12px; padding: 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 24px; }
+    .section-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .section-card .section-desc { font-size: 14px; color: #888; margin-bottom: 24px; }
+
+    /* Flip cards */
+    .flip-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .card-grid  { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+    .flip-card { height: 220px; perspective: 1000px; cursor: pointer; }
+    .flip-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+    .flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+    .flip-front, .flip-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+    .flip-front { background: linear-gradient(135deg, #fff3e8, #ffe8cc); border: 2px solid #f6821f; }
+    .flip-front .emoji { font-size: 40px; margin-bottom: 12px; }
+    .flip-front p { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+    .flip-front span { font-size: 12px; color: #f6821f; margin-top: 8px; }
+    .flip-back { background: #f6821f; transform: rotateY(180deg); }
+    .flip-back p { font-size: 13px; color: white; line-height: 1.6; }
+    /* Module 2 card-grid inner elements */
+    .card-icon  { font-size: 36px; margin-bottom: 10px; }
+    .card-title { font-size: 14px; font-weight: 700; color: #1a1a1a; margin-bottom: 6px; }
+    .card-hint  { font-size: 11px; color: #f6821f; margin-top: 6px; }
+    .flip-back .card-title { color: white; margin-bottom: 8px; }
+    .card-body  { font-size: 12px; color: white; line-height: 1.6; }
+
+    /* Animation */
+    .animation-toggle { display: flex; gap: 12px; margin-bottom: 24px; }
+    .toggle-btn { padding: 10px 24px; border-radius: 8px; border: 2px solid #f6821f; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; background: white; color: #f6821f; }
+    .toggle-btn.active { background: #f6821f; color: white; }
+    .animation-stage { background: #f8f8f8; border-radius: 12px; padding: 40px; min-height: 180px; }
+    .anim-row { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
+    .anim-node { background: white; border-radius: 12px; padding: 16px 20px; font-size: 13px; font-weight: 600; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); min-width: 100px; }
+    .anim-node .icon { font-size: 28px; display: block; margin-bottom: 4px; }
+    .anim-arrow { font-size: 24px; color: #f6821f; animation: pulse 1s infinite; }
+    .anim-arrow.bad { color: #ef4444; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.6;transform:scale(1.2)} }
+    .anim-result { text-align: center; margin-top: 20px; font-size: 15px; font-weight: 600; }
+    .anim-result.good { color: #22c55e; }
+    .anim-result.bad { color: #ef4444; }
+
+    /* Drag and drop */
+    .drag-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    @media(max-width:600px){.drag-grid{grid-template-columns:1fr}}
+    .drag-col h4 { font-size: 13px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+    .drag-item { background: #fff3e8; border: 2px solid #f6821f; border-radius: 8px; padding: 12px 16px; margin-bottom: 10px; cursor: grab; font-size: 14px; font-weight: 600; color: #1a1a1a; transition: all 0.2s; user-select: none; }
+    .drag-item:hover { background: #f6821f; color: white; }
+    .drag-item.dragging { opacity: 0.4; }
+    .drop-zone { background: #f8f8f8; border: 2px dashed #ddd; border-radius: 8px; padding: 12px 16px; margin-bottom: 10px; min-height: 48px; font-size: 13px; color: #aaa; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+    .drop-zone.drag-over { border-color: #f6821f; background: #fff3e8; }
+    .drop-zone.correct { border-color: #22c55e; background: #f0fdf4; color: #22c55e; }
+    .drop-zone.incorrect { border-color: #ef4444; background: #fef2f2; }
+    .def-text { font-size: 12px; color: #666; }
+    .drag-reset { margin-top: 12px; padding: 8px 20px; border-radius: 8px; border: 2px solid #ddd; background: white; cursor: pointer; font-size: 13px; font-weight: 600; color: #666; transition: all 0.2s; }
+    .drag-reset:hover { border-color: #f6821f; color: #f6821f; }
+
+    /* Quiz */
+    .quiz-block { margin-bottom: 32px; }
+    .quiz-block .quiz-question { font-size: 15px; font-weight: 600; margin-bottom: 14px; color: #1a1a1a; line-height: 1.5; }
+    .quiz-question { margin-bottom: 32px; }
+    .quiz-question h4 { font-size: 17px; font-weight: 700; margin-bottom: 16px; }
+    .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+    .quiz-option { padding: 14px 20px; border-radius: 10px; border: 2px solid #e8e8e8; background: white; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; text-align: left; }
+    .quiz-option:hover:not(:disabled) { border-color: #f6821f; color: #f6821f; }
+    .quiz-option.correct { border-color: #22c55e; background: #f0fdf4; color: #22c55e; }
+    .quiz-option.incorrect { border-color: #ef4444; background: #fef2f2; color: #ef4444; }
+    .quiz-option:disabled { cursor: default; }
+    .quiz-feedback { margin-top: 12px; padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; display: none; }
+    .quiz-feedback.show { display: block; }
+    .quiz-feedback.correct { background: #f0fdf4; color: #22c55e; }
+    .quiz-feedback.incorrect { background: #fef2f2; color: #ef4444; }
+
+    /* Elevator pitch */
+    .pitch-container { text-align: center; }
+    .pitch-timer { font-size: 64px; font-weight: 700; color: #f6821f; margin: 24px 0; font-variant-numeric: tabular-nums; }
+    .pitch-btn { padding: 16px 40px; border-radius: 12px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s; margin: 8px; }
+    .pitch-btn.start { background: #f6821f; color: white; }
+    .pitch-btn.start:hover { background: #e06b0a; }
+    .pitch-btn.stop { background: #ef4444; color: white; }
+    .pitch-status { font-size: 14px; color: #888; margin-bottom: 16px; min-height: 20px; }
+    .pitch-transcript { background: #f8f8f8; border-radius: 8px; padding: 16px; font-size: 14px; color: #444; line-height: 1.6; margin: 16px 0; min-height: 80px; text-align: left; display: none; }
+    .pitch-transcript.show { display: block; }
+    .pitch-feedback { background: white; border-radius: 12px; padding: 24px; margin-top: 16px; text-align: left; display: none; border: 2px solid #e8e8e8; }
+    .pitch-feedback.show { display: block; }
+    .pitch-feedback h4 { font-size: 16px; font-weight: 700; margin-bottom: 16px; color: #1a1a1a; }
+    .feedback-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; font-size: 14px; line-height: 1.5; }
+    .feedback-row .badge { font-size: 18px; flex-shrink: 0; }
+    .keyword-grid { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .keyword-tag { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .keyword-tag.found { background: #f0fdf4; color: #22c55e; border: 1px solid #22c55e; }
+    .keyword-tag.missing { background: #fef2f2; color: #ef4444; border: 1px solid #ef4444; }
+    .pitch-tip { background: #fff3e8; border-radius: 8px; padding: 12px 16px; font-size: 14px; color: #92400e; margin-top: 12px; }
+
+    /* My Progress dashboard */
+    .dashboard-hero { background: white; border-radius: 12px; padding: 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 24px; }
+    .dashboard-hero h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+    .dashboard-hero p { color: #666; font-size: 15px; margin-bottom: 24px; }
+    .overall-bar-track { background: #f0f0f0; border-radius: 99px; height: 16px; margin-bottom: 8px; }
+    .overall-bar-fill { background: #f6821f; border-radius: 99px; height: 16px; transition: width 0.8s ease; }
+    .overall-pct { font-size: 14px; font-weight: 600; color: #666; text-align: right; }
+    .module-status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .module-status-card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-left: 4px solid #e8e8e8; }
+    .module-status-card.complete { border-left-color: #22c55e; }
+    .module-status-card.in-progress { border-left-color: #f6821f; }
+    .module-status-card.not-started { border-left-color: #e8e8e8; }
+    .module-status-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .module-status-badge { display: inline-block; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 20px; margin-bottom: 12px; }
+    .badge-complete { background: #f0fdf4; color: #22c55e; }
+    .badge-progress { background: #fff3e8; color: #f6821f; }
+    .badge-notstarted { background: #f6f6f6; color: #aaa; }
+    .activity-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .activity-pill { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 600; }
+    .activity-pill.done { background: #f0fdf4; color: #22c55e; }
+    .activity-pill.pending { background: #f6f6f6; color: #aaa; }
+    .reset-btn { padding: 10px 24px; border-radius: 8px; border: 2px solid #ef4444; background: white; color: #ef4444; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .reset-btn:hover { background: #ef4444; color: white; }
+
+    /* Certificate */
+    .cert-container { display: none; background: white; border-radius: 12px; padding: 48px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 24px; }
+    .cert-container.show { display: block; }
+    .cert-container h2 { font-size: 28px; font-weight: 700; color: #f6821f; margin-bottom: 8px; }
+    .cert-container p { color: #666; font-size: 16px; margin-bottom: 24px; }
+    .cert-download { padding: 14px 32px; background: #f6821f; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+    .cert-download:hover { background: #e06b0a; }
+
+    /* Resources */
+    .resources-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .resource-card { background: white; border-radius: 10px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .resource-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+    .resource-card p { font-size: 14px; color: #666; line-height: 1.5; margin-bottom: 16px; }
+    .resource-card a { color: #f6821f; font-size: 14px; font-weight: 600; text-decoration: none; }
+    .resource-card a:hover { text-decoration: underline; }
+    .footer { text-align: center; padding: 32px; color: #aaa; font-size: 13px; }
+
+    /* Name prompt overlay */
+    .name-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+    .name-overlay.hidden { display: none; }
+    .name-box { background: white; border-radius: 16px; padding: 48px 40px; max-width: 480px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+    .name-box h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+    .name-box p { color: #666; font-size: 15px; margin-bottom: 24px; line-height: 1.5; }
+    .name-box input { width: 100%; padding: 14px 16px; border: 2px solid #e8e8e8; border-radius: 10px; font-size: 16px; outline: none; margin-bottom: 16px; transition: border 0.2s; }
+    .name-box input:focus { border-color: #f6821f; }
+    .name-box button { width: 100%; padding: 14px; background: #f6821f; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+    .name-box button:hover { background: #e06b0a; }
+    .name-box .logo { font-size: 40px; margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+
+<!-- Name prompt overlay -->
+<div class="name-overlay hidden" id="name-overlay">
+  <div class="name-box">
+    <div class="logo">☁️</div>
+    <h2>Welcome to Revenue Essentials!</h2>
+    <p>Please enter your full name so we can track your progress and issue your certificate.</p>
+    <input type="text" id="name-input" placeholder="e.g. Jane Smith" maxlength="60" />
+    <button onclick="saveLearnerName()">Start Learning →</button>
+  </div>
+</div>
+
+<div class="header">
+  <h1>Revenue Essentials Virtual Bootcamp</h1>
+</div>
+
+<div class="tab-nav">
+  <button class="active" onclick="showTab('home',this)">Home</button>
+  <button onclick="showTab('module1',this)">Module 1: What is Cloudflare</button>
+  <button onclick="showTab('module2',this)">Module 2: Power of the Network</button>
+  <button onclick="showTab('module3',this)">Module 3: Cloudflare Portfolio</button>
+  <button onclick="showTab('module4',this)">Module 4: How We Sell</button>
+  <button onclick="showTab('resources',this)">Resources</button>
+  <button onclick="showTab('dashboard',this)">My Progress</button>
+</div>
+
+<div class="content">
+
+  <!-- HOME -->
+  <div id="home" class="tab-panel active">
+    <div class="home-hero">
+      <h2>Welcome to Revenue Essentials</h2>
+      <p>Your self-serve learning experience for Cloudflare's sales bootcamp. Work through each module at your own pace and come prepared for live sessions.</p>
+    </div>
+    <div class="module-grid">
+      <div class="module-card" onclick="showTab('module1',document.querySelectorAll('.tab-nav button')[1])">
+        <div class="module-number">Module 1</div>
+        <h3>What is Cloudflare</h3>
+      </div>
+      <div class="module-card" onclick="showTab('module2',document.querySelectorAll('.tab-nav button')[2])">
+        <div class="module-number">Module 2</div>
+        <h3>Power of the Cloudflare Network</h3>
+      </div>
+      <div class="module-card" onclick="showTab('module3',document.querySelectorAll('.tab-nav button')[3])">
+        <div class="module-number">Module 3</div>
+        <h3>Cloudflare Portfolio</h3>
+      </div>
+      <div class="module-card" onclick="showTab('module4',document.querySelectorAll('.tab-nav button')[4])">
+        <div class="module-number">Module 4</div>
+        <h3>How We Sell</h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 1 -->
+  <div id="module1" class="tab-panel">
+    <div class="module-header">
+      <div class="tag">Module 1</div>
+      <h2>What is Cloudflare</h2>
+    </div>
+
+    <div class="progress-container">
+      <div class="progress-label">
+        <span>Module 1 Progress</span>
+        <span id="m1-pct">0%</span>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="m1-fill"></div>
+      </div>
+      <div class="progress-steps">
+        <div class="progress-step" id="step-m1-cards"><span class="dot"></span> Story Cards</div>
+        <div class="progress-step" id="step-m1-anim"><span class="dot"></span> Animation</div>
+        <div class="progress-step" id="step-m1-drag"><span class="dot"></span> Drag &amp; Drop</div>
+        <div class="progress-step" id="step-m1-quiz"><span class="dot"></span> Quiz</div>
+        <div class="progress-step" id="step-m1-pitch"><span class="dot"></span> Elevator Pitch</div>
+      </div>
+    </div>
+
+    <!-- Flip Cards -->
+    <div class="section-card">
+      <h3>🧨 The Story of Cloudflare</h3>
+      <p class="section-desc">Click each card to reveal the answer</p>
+      <div class="flip-grid">
+        <div class="flip-card" onclick="flipCard(this,'m1')">
+          <div class="flip-inner">
+            <div class="flip-front"><span class="emoji">🧨</span><p>What problem did Cloudflare solve?</p><span>Click to reveal</span></div>
+            <div class="flip-back"><p>Websites used to crash when too many people visited at once. Cloudflare was built to absorb that traffic and keep sites online no matter what.</p></div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="flipCard(this,'m1')">
+          <div class="flip-inner">
+            <div class="flip-front"><span class="emoji">🦸</span><p>What IS Cloudflare?</p><span>Click to reveal</span></div>
+            <div class="flip-back"><p>A global cloud platform providing security, performance, and reliability. It acts as a reverse proxy — sitting between users and websites to protect and accelerate them.</p></div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="flipCard(this,'m1')">
+          <div class="flip-inner">
+            <div class="flip-front"><span class="emoji">🌍</span><p>How does the network work?</p><span>Click to reveal</span></div>
+            <div class="flip-back"><p>Cloudflare has 330+ data centers worldwide. Content is cached and served from the city closest to you — like ordering from a local shop instead of across the country.</p></div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="flipCard(this,'m1')">
+          <div class="flip-inner">
+            <div class="flip-front"><span class="emoji">🛡️</span><p>What does Cloudflare protect against?</p><span>Click to reveal</span></div>
+            <div class="flip-back"><p>DDoS attacks, malicious bots, SQL injection, and data theft — all blocked automatically by Cloudflare's WAF and security systems, 24/7.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Animation -->
+    <div class="section-card">
+      <h3>⚡ See It In Action</h3>
+      <p class="section-desc">Toggle between a world with and without Cloudflare</p>
+      <div class="animation-toggle">
+        <button class="toggle-btn active" onclick="setAnim('without',this,'m1')">❌ Without Cloudflare</button>
+        <button class="toggle-btn" onclick="setAnim('with',this,'m1')">✅ With Cloudflare</button>
+      </div>
+      <div class="animation-stage">
+        <div class="anim-row" id="m1-anim-row">
+          <div class="anim-node"><span class="icon">👤</span>User</div>
+          <div class="anim-arrow bad">→</div>
+          <div class="anim-node"><span class="icon">💻</span>Website</div>
+          <div class="anim-arrow bad">→</div>
+          <div class="anim-node"><span class="icon">💥</span>Server Crash</div>
+        </div>
+        <div class="anim-result bad" id="m1-anim-result">The server is overwhelmed and crashes. Nobody can access the website.</div>
+      </div>
+    </div>
+
+    <!-- Drag and Drop -->
+    <div class="section-card">
+      <h3>🎯 Match the Terms</h3>
+      <p class="section-desc">Drag each Cloudflare term to its plain English definition</p>
+      <div class="drag-grid">
+        <div>
+          <div class="drag-col"><h4>Cloudflare Terms</h4></div>
+          <div id="m1-drag-items">
+            <div class="drag-item" draggable="true" data-term="ddos" ondragstart="dragStart(event)">DDoS Attack</div>
+            <div class="drag-item" draggable="true" data-term="ssl" ondragstart="dragStart(event)">SSL</div>
+            <div class="drag-item" draggable="true" data-term="cdn" ondragstart="dragStart(event)">CDN</div>
+            <div class="drag-item" draggable="true" data-term="firewall" ondragstart="dragStart(event)">Firewall</div>
+            <div class="drag-item" draggable="true" data-term="edge" ondragstart="dragStart(event)">Edge Network</div>
+          </div>
+          <button class="drag-reset" onclick="resetDrag('m1')">↺ Reset</button>
+        </div>
+        <div>
+          <div class="drag-col"><h4>Definitions</h4></div>
+          <div class="drop-zone" data-answer="ddos" data-module="m1" ondragover="dragOver(event)" ondrop="drop(event,'m1')" ondragleave="dragLeave(event)"><span class="def-text">Flooding a website with fake traffic to crash it</span></div>
+          <div class="drop-zone" data-answer="ssl" data-module="m1" ondragover="dragOver(event)" ondrop="drop(event,'m1')" ondragleave="dragLeave(event)"><span class="def-text">The padlock encrypting your connection (the 's' in https)</span></div>
+          <div class="drop-zone" data-answer="cdn" data-module="m1" ondragover="dragOver(event)" ondrop="drop(event,'m1')" ondragleave="dragLeave(event)"><span class="def-text">Serving content from the city closest to you</span></div>
+          <div class="drop-zone" data-answer="firewall" data-module="m1" ondragover="dragOver(event)" ondrop="drop(event,'m1')" ondragleave="dragLeave(event)"><span class="def-text">A digital bouncer that blocks bad traffic</span></div>
+          <div class="drop-zone" data-answer="edge" data-module="m1" ondragover="dragOver(event)" ondrop="drop(event,'m1')" ondragleave="dragLeave(event)"><span class="def-text">Cloudflare's 330+ buildings around the world</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz -->
+    <div class="section-card">
+      <h3>🧠 Quick Knowledge Check</h3>
+      <p class="section-desc">Two quick questions — you've got this!</p>
+      <div class="quiz-question">
+        <h4>Q1: What does Cloudflare do when too many people visit a website at once?</h4>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="answer(this,false,'m1q1','Not quite — Cloudflare is designed to prevent crashes by distributing traffic!')">A) The website crashes immediately</button>
+          <button class="quiz-option" onclick="answer(this,true,'m1q1','Correct! Cloudflare distributes traffic across its global network so the site stays up.')">B) Cloudflare distributes the traffic so the site stays up</button>
+          <button class="quiz-option" onclick="answer(this,false,'m1q1','Not quite — Cloudflare never turns users away. It handles the load instead.')">C) Cloudflare sends the users away</button>
+          <button class="quiz-option" onclick="answer(this,false,'m1q1','Not quite — that\'s exactly the problem Cloudflare was built to solve!')">D) Nothing — it's the website owner's problem</button>
+        </div>
+        <div class="quiz-feedback" id="m1q1-feedback"></div>
+      </div>
+      <div class="quiz-question">
+        <h4>Q2: Approximately what percentage of all websites use Cloudflare?</h4>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="answer(this,false,'m1q2','Not quite — Cloudflare is much bigger than that!')">A) 5%</button>
+          <button class="quiz-option" onclick="answer(this,true,'m1q2','Correct! Roughly 20% of all websites use Cloudflare to secure and optimise their online presence.')">B) 20%</button>
+          <button class="quiz-option" onclick="answer(this,false,'m1q2','Not quite — 20% is the right answer!')">C) 50%</button>
+          <button class="quiz-option" onclick="answer(this,false,'m1q2','Not quite — 20% is the right answer. Still very impressive!')">D) 75%</button>
+        </div>
+        <div class="quiz-feedback" id="m1q2-feedback"></div>
+      </div>
+    </div>
+
+    <!-- Elevator Pitch -->
+    <div class="section-card">
+      <h3>🎙️ Elevator Pitch Practice</h3>
+      <p class="section-desc">Record a 2-minute pitch explaining what Cloudflare is. We'll give you instant feedback on what you covered.</p>
+      <div class="pitch-container">
+        <div class="pitch-timer" id="pitch-timer">2:00</div>
+        <div class="pitch-status" id="pitch-status">Click the button below and start speaking!</div>
+        <div>
+          <button class="pitch-btn start" id="pitch-start-btn" onclick="startPitch()">🎙️ Start Recording</button>
+          <button class="pitch-btn stop" id="pitch-stop-btn" onclick="stopPitch()" style="display:none">⏹️ Stop Early</button>
+        </div>
+        <div class="pitch-transcript" id="pitch-transcript"></div>
+        <div class="pitch-feedback" id="pitch-feedback"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 2 -->
+  <div id="module2" class="tab-panel">
+    <div class="module-header">
+      <div class="tag">Module 2</div>
+      <h2>Power of the Cloudflare Network</h2>
+    </div>
+
+    <div class="progress-container">
+      <div class="progress-label">
+        <span>Module 2 Progress</span>
+        <span id="m2-pct">0%</span>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="m2-fill"></div>
+      </div>
+      <div class="progress-steps">
+        <div class="progress-step" id="step-m2-cards"><span class="dot"></span> Network Cards</div>
+        <div class="progress-step" id="step-m2-anim"><span class="dot"></span> Animation</div>
+        <div class="progress-step" id="step-m2-drag"><span class="dot"></span> Drag &amp; Drop</div>
+        <div class="progress-step" id="step-m2-quiz"><span class="dot"></span> Quiz</div>
+      </div>
+    </div>
+
+    <!-- Intro -->
+    <div class="section-card">
+      <h3>🌐 Why the Network is the Differentiator</h3>
+      <p class="section-desc">Every Cloudflare service runs on every server, in every data center, across 330+ cities in 125+ countries. That's not just scale — it's a fundamentally different architecture. This module explains why the network itself is the product.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:8px;">
+        <div style="background:#fff3e8;border-radius:10px;padding:20px;border-left:4px solid #f6821f;text-align:center;">
+          <div style="font-size:28px;font-weight:800;color:#f6821f;">330+</div>
+          <div style="font-size:13px;color:#555;">Cities in 125+ countries</div>
+        </div>
+        <div style="background:#fff3e8;border-radius:10px;padding:20px;border-left:4px solid #f6821f;text-align:center;">
+          <div style="font-size:28px;font-weight:800;color:#f6821f;">477 Tbps</div>
+          <div style="font-size:13px;color:#555;">Network capacity</div>
+        </div>
+        <div style="background:#fff3e8;border-radius:10px;padding:20px;border-left:4px solid #f6821f;text-align:center;">
+          <div style="font-size:28px;font-weight:800;color:#f6821f;">~50 ms</div>
+          <div style="font-size:13px;color:#555;">From 95% of the world's internet population</div>
+        </div>
+        <div style="background:#fff3e8;border-radius:10px;padding:20px;border-left:4px solid #f6821f;text-align:center;">
+          <div style="font-size:28px;font-weight:800;color:#f6821f;">13,000+</div>
+          <div style="font-size:13px;color:#555;">Networks directly peered with Cloudflare</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flip Cards -->
+    <div class="section-card">
+      <h3>🃏 Network Architecture Cards</h3>
+      <p class="section-desc">Flip each card to learn what makes Cloudflare's network unique. Flip all 5 to complete this activity.</p>
+      <div class="card-grid">
+
+        <div class="flip-card" onclick="flipCard(this,'m2')">
+          <div class="flip-inner">
+            <div class="flip-front">
+              <div class="card-icon">🏗️</div>
+              <div class="card-title">Every Service in Every Server</div>
+              <div class="card-hint">Tap to flip</div>
+            </div>
+            <div class="flip-back">
+              <div class="card-title">The "Every Server" Architecture</div>
+              <div class="card-body">Unlike scrubbing centers that only run DDoS mitigation in specific locations, every Cloudflare service — WAF, CDN, DDoS, Zero Trust — runs on every server in every data center. Network capacity = mitigation capacity = 477 Tbps.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card" onclick="flipCard(this,'m2')">
+          <div class="flip-inner">
+            <div class="flip-front">
+              <div class="card-icon">📡</div>
+              <div class="card-title">Anycast Routing</div>
+              <div class="card-hint">Tap to flip</div>
+            </div>
+            <div class="flip-back">
+              <div class="card-title">Anycast: Closest Server Wins</div>
+              <div class="card-body">Cloudflare uses Anycast networking — all data centers share the same IP address. When a user (or attacker) sends traffic, it automatically routes to the nearest Cloudflare location. Attack traffic gets absorbed closest to its source, before it can overwhelm a single point.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card" onclick="flipCard(this,'m2')">
+          <div class="flip-inner">
+            <div class="flip-front">
+              <div class="card-icon">💣</div>
+              <div class="card-title">DDoS: What It Is</div>
+              <div class="card-hint">Tap to flip</div>
+            </div>
+            <div class="flip-back">
+              <div class="card-title">Distributed Denial of Service</div>
+              <div class="card-body">A DDoS attack floods your infrastructure with fake traffic to make it unavailable to real users. It's low-cost for attackers, high-cost for victims. In 2025 alone, Cloudflare mitigated 47 million DDoS attacks — 73% more than 2024. 89% last under 10 minutes ("hit and run").</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card" onclick="flipCard(this,'m2')">
+          <div class="flip-inner">
+            <div class="flip-front">
+              <div class="card-icon">🚂</div>
+              <div class="card-title">Magic Transit</div>
+              <div class="card-hint">Tap to flip</div>
+            </div>
+            <div class="flip-back">
+              <div class="card-title">Magic Transit: L3 DDoS Protection</div>
+              <div class="card-body">Magic Transit protects entire IP address ranges (prefixes). Traffic is ingested via BGP route announcements, inspected at every Cloudflare PoP, then clean traffic is returned via GRE/IPsec tunnels. Always-On mode detects and mitigates in ~3 seconds — before on-demand tools even activate.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card" onclick="flipCard(this,'m2')">
+          <div class="flip-inner">
+            <div class="flip-front">
+              <div class="card-icon">🧹</div>
+              <div class="card-title">Why Scrubbing Centers Fail</div>
+              <div class="card-hint">Tap to flip</div>
+            </div>
+            <div class="flip-back">
+              <div class="card-title">The Scrubbing Center Problem</div>
+              <div class="card-body">Legacy DDoS solutions use centralized scrubbing centers — dedicated locations that clean traffic. Problems: (1) They add latency by re-routing traffic. (2) They're capacity-limited — competitors like Akamai Prolexic have 15 Tbps; the 31.4 Tbps record attack would have taken them offline. Cloudflare's 477 Tbps distributed network handled it with headroom to spare.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Animation -->
+    <div class="section-card">
+      <h3>🎬 Scrubbing Center vs. Cloudflare</h3>
+      <p class="section-desc">Toggle between the two architectures to see why the distributed model wins.</p>
+      <div class="animation-toggle">
+        <button class="toggle-btn active" onclick="setAnimM2('scrubbing',this)">Legacy Scrubbing Center</button>
+        <button class="toggle-btn" onclick="setAnimM2('cloudflare',this)">Cloudflare Network</button>
+      </div>
+      <div class="anim-row" id="m2-anim-row">
+        <div class="anim-node"><span class="icon">🌐</span>Internet Traffic</div>
+        <div class="anim-arrow bad">→</div>
+        <div class="anim-node"><span class="icon">🏭</span>Scrubbing Center<br><small style="font-size:11px;font-weight:400">(centralised, 15 Tbps)</small></div>
+        <div class="anim-arrow bad">→</div>
+        <div class="anim-node"><span class="icon">⏳</span>Added Latency Hop</div>
+        <div class="anim-arrow bad">→</div>
+        <div class="anim-node"><span class="icon">🏢</span>Customer DC</div>
+      </div>
+      <div class="anim-result bad" id="m2-anim-result">Centralised scrubbing adds latency and has limited capacity. Against a 31.4 Tbps attack, most competitors would be overwhelmed.</div>
+    </div>
+
+    <!-- Drag & Drop -->
+    <div class="section-card">
+      <h3>🎯 Match the Product to the Protection</h3>
+      <p class="section-desc">Drag each Cloudflare Network Services product to the correct protection it provides. Match all 5 to complete.</p>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;">
+        <div>
+          <div style="font-size:12px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Products</div>
+          <div id="m2-drag-items" style="display:flex;flex-direction:column;gap:8px;min-width:200px;"></div>
+        </div>
+        <div style="flex:1;min-width:260px;">
+          <div style="font-size:12px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">What it protects</div>
+          <div class="drop-zone" data-answer="mt" data-module="m2" ondragover="dragOver(event)" ondrop="drop(event,'m2')" ondragleave="dragLeave(event)">
+            <span class="def-text">Protects entire IP address ranges (prefixes) from L3 DDoS attacks using BGP routing</span>
+          </div>
+          <div class="drop-zone" data-answer="spectrum" data-module="m2" ondragover="dragOver(event)" ondrop="drop(event,'m2')" ondragleave="dragLeave(event)">
+            <span class="def-text">Reverse-proxy that protects any TCP/UDP application at Layer 4 — not just websites</span>
+          </div>
+          <div class="drop-zone" data-answer="netfw" data-module="m2" ondragover="dragOver(event)" ondrop="drop(event,'m2')" ondragleave="dragLeave(event)">
+            <span class="def-text">Cloud-native firewall enforcing consistent policies across branch offices, data centers, and cloud — no appliances</span>
+          </div>
+          <div class="drop-zone" data-answer="cni" data-module="m2" ondragover="dragOver(event)" ondrop="drop(event,'m2')" ondragleave="dragLeave(event)">
+            <span class="def-text">Private direct connection between customer network and Cloudflare — like AWS Direct Connect but for Cloudflare</span>
+          </div>
+          <div class="drop-zone" data-answer="argo" data-module="m2" ondragover="dragOver(event)" ondrop="drop(event,'m2')" ondragleave="dragLeave(event)">
+            <span class="def-text">Intelligently routes traffic around internet congestion — makes web assets 30% faster on average</span>
+          </div>
+        </div>
+      </div>
+      <button class="reset-btn" style="margin-top:12px;" onclick="resetDrag('m2')">↺ Reset</button>
+    </div>
+
+    <!-- Quiz -->
+    <div class="section-card">
+      <h3>📝 Module 2 Quiz</h3>
+      <p class="section-desc">Answer both questions to complete Module 2.</p>
+
+      <div class="quiz-block">
+        <div class="quiz-question">A prospect says: "We already use a cloud scrubbing center for DDoS protection — why would we need Cloudflare?" What's the strongest response?</div>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="answer(this,false,'m2q1','Not quite. Scrubbing centers can actually be effective for many scenarios — the key issue is capacity and latency.')">Scrubbing centers are completely outdated and never work.</button>
+          <button class="quiz-option" onclick="answer(this,true,'m2q1','Correct! Scrubbing centers backhaul traffic to centralized locations, adding latency. They also have fixed capacity — most max out at 15–20 Tbps. Against the record 31.4 Tbps attack, competitors would have been overwhelmed. Cloudflare\u2019s distributed 477 Tbps network absorbs attacks closest to the source with no added latency.')">Scrubbing centers add latency by backhauling traffic and have fixed capacity limits — most competitors couldn't survive a 31.4 Tbps attack. Cloudflare's 477 Tbps is distributed across every PoP.</button>
+          <button class="quiz-option" onclick="answer(this,false,'m2q1','Partially right, but cost alone isn\u2019t the key differentiator here — architecture and capacity are.')">Cloudflare is cheaper than scrubbing center vendors.</button>
+        </div>
+        <div class="quiz-feedback" id="m2q1-feedback"></div>
+      </div>
+
+      <div class="quiz-block">
+        <div class="quiz-question">A customer's data center gets hit by a volumetric DDoS attack. They're running Magic Transit in Always-On mode. What happens?</div>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="answer(this,false,'m2q2','Incorrect. With Always-On, no human intervention is needed — mitigation is autonomous.')">Their network team manually triggers mitigation from the dashboard.</button>
+          <button class="quiz-option" onclick="answer(this,false,'m2q2','Incorrect. On-Demand mode requires triggering. Always-On mode is already active — that\u2019s the whole point.')">Magic Transit detects the attack but waits for BGP route convergence before acting.</button>
+          <button class="quiz-option" onclick="answer(this,true,'m2q2','Correct! Magic Transit Always-On autonomously detects and mitigates in ~3 seconds — no human needed, no route convergence delay. Over 80% of Magic Transit customers choose Always-On for exactly this reason.')">Cloudflare autonomously detects and mitigates the attack in ~3 seconds with no human intervention required.</button>
+        </div>
+        <div class="quiz-feedback" id="m2q2-feedback"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODULE 3 -->
+  <div id="module3" class="tab-panel">
+    <div class="module-header">
+      <div class="tag">Module 3</div>
+      <h2>Cloudflare Portfolio</h2>
+    </div>
+
+    <div class="progress-container">
+      <div class="progress-label">
+        <span>Module 3 Progress</span>
+        <span id="m3-pct">0%</span>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="m3-fill"></div>
+      </div>
+      <div class="progress-steps">
+        <div class="progress-step" id="step-m3-cards"><span class="dot"></span> Pillar Cards</div>
+        <div class="progress-step" id="step-m3-anim"><span class="dot"></span> Animation</div>
+        <div class="progress-step" id="step-m3-drag"><span class="dot"></span> Drag &amp; Drop</div>
+        <div class="progress-step" id="step-m3-quiz"><span class="dot"></span> Final Exam</div>
+      </div>
+    </div>
+
+    <!-- Intro: Connectivity Cloud concept -->
+    <div class="section-card">
+      <h3>🌩️ The Connectivity Cloud</h3>
+      <p class="section-desc">For 2026, the entire Cloudflare portfolio is anchored by one idea: a unified platform that connects and protects everything — websites, employees, devices, and AI agents. Think of it as a Swiss Army Knife that is also a shield.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:8px;">
+        <div style="background:#fff3e8;border-radius:10px;padding:20px;border-left:4px solid #f6821f;">
+          <div style="font-size:24px;margin-bottom:8px;">🛡️</div>
+          <div style="font-size:13px;font-weight:700;color:#f6821f;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Pillar 1</div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:4px;">Application Services</div>
+          <div style="font-size:13px;color:#666;">Protecting the public front door — websites, APIs, and DNS.</div>
+        </div>
+        <div style="background:#fff3e8;border-radius:10px;padding:20px;border-left:4px solid #f6821f;">
+          <div style="font-size:24px;margin-bottom:8px;">🔐</div>
+          <div style="font-size:13px;font-weight:700;color:#f6821f;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Pillar 2</div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:4px;">SASE &amp; Networking</div>
+          <div style="font-size:13px;color:#666;">Protecting the internal office — employees, devices, and access.</div>
+        </div>
+        <div style="background:#fff3e8;border-radius:10px;padding:20px;border-left:4px solid #f6821f;">
+          <div style="font-size:24px;margin-bottom:8px;">🛠️</div>
+          <div style="font-size:13px;font-weight:700;color:#f6821f;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Pillar 3</div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:4px;">Developer Platform</div>
+          <div style="font-size:13px;color:#666;">Building the next big thing — apps, storage, databases, and AI.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flip Cards: one per pillar phase -->
+    <div class="section-card">
+      <h3>🗂️ Deep Dive: The Three Pillars</h3>
+      <p class="section-desc">Click each card to explore each phase within the three pillars</p>
+      <div style="font-size:13px;font-weight:700;color:#f6821f;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">🛡️ Pillar 1 — Application Services</div>
+      <div class="flip-grid" style="margin-bottom:24px;">
+        <div class="flip-card" onclick="flipCard(this,'m3')">
+          <div class="flip-inner">
+            <div class="flip-front"><span class="emoji">📖</span><p>DNS &amp; CDN</p><span>Click to reveal</span></div>
+            <div class="flip-back"><p>DNS is the "phonebook of the internet." Cloudflare's CDN caches content globally so a user in Tokyo loads from a nearby data center, not a server in London. Speed = revenue.</p></div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="flipCard(this,'m3')">
+          <div class="flip-inner">
+            <div class="flip-front"><span class="emoji">🌊</span><p>DDoS &amp; Magic Transit</p><span>Click to reveal</span></div>
+            <div class="flip-back"><p>DDoS floods a site with fake traffic to crash it. Cloudflare absorbs the attack at the network edge. Magic Transit extends this to entire IP ranges — protecting a company's whole network, not just one website.</p></div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="flipCard(this,'m3')">
+          <div class="flip-inner">
+            <div class="flip-front"><span class="emoji">🤖</span><p>WAF, API Security &amp; Bots</p><span>Click to reveal</span></div>
+            <div class="flip-back"><p>WAF blocks the OWASP Top 10 (SQL injection, XSS). API Security schema-validates requests — APIs are hackers' new favourite target. Bot Management separates good bots (Google) from bad bots (scrapers, scalpers).</p></div>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:#f6821f;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">🔐 Pillar 2 — SASE &amp; Networking</div>
+      <div class="flip-grid" style="margin-bottom:24px;">
+        <div class="flip-card" onclick="flipCard(this,'m3')">
+          <div class="flip-inner">
+            <div class="flip-front"><span class="emoji">💀</span><p>Death of the VPN</p><span>Click to reveal</span></div>
+            <div class="flip-back"><p>Traditional VPNs are slow, over-privileged, and hated. Zero Trust replaces them: "Never Trust, Always Verify." Every request is checked for identity and device health before granting access — even inside the network.</p></div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="flipCard(this,'m3')">
+          <div class="flip-inner">
+            <div class="flip-front"><span class="emoji">🏢</span><p>Next-Gen Firewall</p><span>Click to reveal</span></div>
+            <div class="flip-back"><p>Legacy on-prem firewalls are expensive hardware boxes. Cloudflare moves the firewall to the software edge — no hardware to maintain, instant global policy updates, and always-on inspection.</p></div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="flipCard(this,'m3')">
+          <div class="flip-inner">
+            <div class="flip-front"><span class="emoji">🗺️</span><p>SASE vs. SSE</p><span>Click to reveal</span></div>
+            <div class="flip-back"><p>SSE = Security Service Edge (just the security tools). SASE = SSE + Networking (SD-WAN). Cloudflare is a SASE leader because we own the global network. Competitors bolt on networking — we built it in from day one.</p></div>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:#f6821f;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">🛠️ Pillar 3 — Developer Platform</div>
+      <div class="flip-grid">
+        <div class="flip-card" onclick="flipCard(this,'m3')">
+          <div class="flip-inner">
+            <div class="flip-front"><span class="emoji">⚡</span><p>Cloudflare Workers</p><span>Click to reveal</span></div>
+            <div class="flip-back"><p>"Serverless" doesn't mean no servers — it means the developer doesn't manage them. Workers runs JavaScript/TypeScript code in milliseconds at the edge, closest to the user. No cold starts. No ops headache.</p></div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="flipCard(this,'m3')">
+          <div class="flip-inner">
+            <div class="flip-front"><span class="emoji">🗄️</span><p>R2, D1 &amp; KV</p><span>Click to reveal</span></div>
+            <div class="flip-back"><p>R2 = object storage with zero egress fees (vs. AWS S3's painful bills). D1 = SQL database at the edge. KV = ultra-fast key-value store. Full-stack apps built entirely on Cloudflare — no AWS, no Azure needed.</p></div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="flipCard(this,'m3')">
+          <div class="flip-inner">
+            <div class="flip-front"><span class="emoji">🧠</span><p>AI on the Edge</p><span>Click to reveal</span></div>
+            <div class="flip-back"><p>Workers AI lets developers run AI inference (e.g. Llama, Mistral) directly on Cloudflare's global network — no expensive GPU instances required. AI Gateway manages, observes, and caches AI traffic across any provider.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Animation: Siloed tools vs Connectivity Cloud -->
+    <div class="section-card">
+      <h3>🔄 Point Solutions vs. The Connectivity Cloud</h3>
+      <p class="section-desc">See the difference between buying 6 vendors and buying one platform</p>
+      <div class="animation-toggle">
+        <button class="toggle-btn active" onclick="setAnimM3('before',this)">❌ The Old World (6 Vendors)</button>
+        <button class="toggle-btn" onclick="setAnimM3('after',this)">✅ The Connectivity Cloud</button>
+      </div>
+      <div class="animation-stage">
+        <div class="anim-row" id="m3-anim-row">
+          <div class="anim-node"><span class="icon">🔐</span>Legacy VPN</div>
+          <div class="anim-arrow bad">+</div>
+          <div class="anim-node"><span class="icon">🧱</span>On-prem Firewall</div>
+          <div class="anim-arrow bad">+</div>
+          <div class="anim-node"><span class="icon">📧</span>Email Filter</div>
+          <div class="anim-arrow bad">+</div>
+          <div class="anim-node"><span class="icon">🌐</span>CDN Vendor</div>
+        </div>
+        <div class="anim-result bad" id="m3-anim-result">6 vendors. 6 contracts. 6 dashboards. Security gaps between every tool. Complexity = risk.</div>
+      </div>
+    </div>
+
+    <!-- Drag and Drop: Customer email → Pillar -->
+    <div class="section-card">
+      <h3>🎯 Which Pillar Solves It?</h3>
+      <p class="section-desc">Drag each customer problem to the Cloudflare pillar that solves it</p>
+      <div class="drag-grid">
+        <div>
+          <div class="drag-col"><h4>Customer Problems</h4></div>
+          <div id="m3-drag-items">
+            <div class="drag-item" draggable="true" data-term="p1a" ondragstart="dragStart(event)">"Our site crashed on Black Friday from fake traffic"</div>
+            <div class="drag-item" draggable="true" data-term="p1b" ondragstart="dragStart(event)">"Hackers are exploiting our login API"</div>
+            <div class="drag-item" draggable="true" data-term="p2a" ondragstart="dragStart(event)">"Staff working from Starbucks — VPN is too slow"</div>
+            <div class="drag-item" draggable="true" data-term="p2b" ondragstart="dragStart(event)">"Our CFO nearly got phished by a fake invoice"</div>
+            <div class="drag-item" draggable="true" data-term="p3a" ondragstart="dragStart(event)">"AWS is too expensive to run our AI chatbot"</div>
+          </div>
+          <button class="drag-reset" onclick="resetDrag('m3')">↺ Reset</button>
+        </div>
+        <div>
+          <div class="drag-col"><h4>Cloudflare Pillar</h4></div>
+          <div class="drop-zone" data-answer="p1a" data-module="m3" ondragover="dragOver(event)" ondrop="drop(event,'m3')" ondragleave="dragLeave(event)"><span class="def-text">🛡️ Pillar 1 — Application Services (DDoS Protection)</span></div>
+          <div class="drop-zone" data-answer="p1b" data-module="m3" ondragover="dragOver(event)" ondrop="drop(event,'m3')" ondragleave="dragLeave(event)"><span class="def-text">🛡️ Pillar 1 — Application Services (API Security / WAF)</span></div>
+          <div class="drop-zone" data-answer="p2a" data-module="m3" ondragover="dragOver(event)" ondrop="drop(event,'m3')" ondragleave="dragLeave(event)"><span class="def-text">🔐 Pillar 2 — SASE &amp; Networking (Zero Trust / Access)</span></div>
+          <div class="drop-zone" data-answer="p2b" data-module="m3" ondragover="dragOver(event)" ondrop="drop(event,'m3')" ondragleave="dragLeave(event)"><span class="def-text">🔐 Pillar 2 — SASE &amp; Networking (Email Security)</span></div>
+          <div class="drop-zone" data-answer="p3a" data-module="m3" ondragover="dragOver(event)" ondrop="drop(event,'m3')" ondragleave="dragLeave(event)"><span class="def-text">🛠️ Pillar 3 — Developer Platform (Workers AI)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Final Exam: 3 customer emails → pillar -->
+    <div class="section-card">
+      <h3>🏆 Final Exam: Which Pillar?</h3>
+      <p class="section-desc">Three customer emails land in your inbox. Which Cloudflare pillar is the right conversation starter?</p>
+      <div class="quiz-question">
+        <h4>Email A: "Our website crashed during our Black Friday sale because of a wave of fake users. We lost $200k in revenue in 30 minutes."</h4>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="answer(this,true,'m3q1','Correct! This is Pillar 1 — Application Services. DDoS protection and Bot Management are designed exactly for this: absorbing fake traffic and keeping sites up under attack.')">A) Pillar 1 — Application Services</button>
+          <button class="quiz-option" onclick="answer(this,false,'m3q1','Not quite — SASE protects employees and internal access, not public-facing websites under external attack.')">B) Pillar 2 — SASE &amp; Networking</button>
+          <button class="quiz-option" onclick="answer(this,false,'m3q1','Not quite — the Developer Platform helps build apps, not defend a site from a DDoS event.')">C) Pillar 3 — Developer Platform</button>
+        </div>
+        <div class="quiz-feedback" id="m3q1-feedback"></div>
+      </div>
+      <div class="quiz-question">
+        <h4>Email B: "My employees are working from coffee shops and I'm terrified their laptops will get compromised. Our VPN is a nightmare — half the team just turns it off."</h4>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="answer(this,false,'m3q2','Not quite — Pillar 1 protects public-facing web apps, not how employees securely access internal tools.')">A) Pillar 1 — Application Services</button>
+          <button class="quiz-option" onclick="answer(this,true,'m3q2','Correct! Pillar 2 — SASE &amp; Networking. Cloudflare Access replaces the VPN with Zero Trust: every device and identity is verified before accessing anything, wherever the employee is.')">B) Pillar 2 — SASE &amp; Networking</button>
+          <button class="quiz-option" onclick="answer(this,false,'m3q2','Not quite — the Developer Platform is for building apps, not securing employee access.')">C) Pillar 3 — Developer Platform</button>
+        </div>
+        <div class="quiz-feedback" id="m3q2-feedback"></div>
+      </div>
+      <div class="quiz-question">
+        <h4>Email C: "We want to build a new AI chatbot for our customers but AWS GPU costs are out of control and our responses are too slow."</h4>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="answer(this,false,'m3q3','Not quite — Application Services protects websites; it doesn\'t help developers build and run AI applications.')">A) Pillar 1 — Application Services</button>
+          <button class="quiz-option" onclick="answer(this,false,'m3q3','Not quite — SASE is about secure employee access, not building or deploying AI workloads.')">B) Pillar 2 — SASE &amp; Networking</button>
+          <button class="quiz-option" onclick="answer(this,true,'m3q3','Correct! Pillar 3 — Developer Platform. Workers AI runs AI inference on Cloudflare\'s global edge network — no expensive GPU instances, sub-millisecond responses, globally distributed.')">C) Pillar 3 — Developer Platform</button>
+        </div>
+        <div class="quiz-feedback" id="m3q3-feedback"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 4 -->
+  <div id="module4" class="tab-panel">
+    <div class="module-header">
+      <div class="tag">Module 4</div>
+      <h2>How We Sell</h2>
+    </div>
+
+    <div class="progress-container">
+      <div class="progress-label">
+        <span>Module 4 Progress</span>
+        <span id="m4-pct">0%</span>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="m4-fill"></div>
+      </div>
+      <div class="progress-steps">
+        <div class="progress-step" id="step-m4-cards"><span class="dot"></span> Role Cards</div>
+        <div class="progress-step" id="step-m4-anim"><span class="dot"></span> Animation</div>
+        <div class="progress-step" id="step-m4-drag"><span class="dot"></span> Drag &amp; Drop</div>
+        <div class="progress-step" id="step-m4-quiz"><span class="dot"></span> Quiz</div>
+      </div>
+    </div>
+
+    <!-- Kolb Step 1: Concrete Experience -->
+    <div class="section-card" style="border-left:4px solid #f6821f;">
+      <div style="font-size:12px;font-weight:700;color:#f6821f;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Step 1 · Concrete Experience — The "Do"</div>
+      <h3>🎭 Your Scenario</h3>
+      <p class="section-desc">Read this before working through the rest of the module.</p>
+      <div style="background:#fff3e8;border-radius:10px;padding:24px;line-height:1.7;font-size:14px;">
+        <p><strong>You are an Account Executive (AE) in the APAC Majors segment.</strong> A BDR has just passed you a qualified lead for a global financial firm looking to migrate away from a legacy competitor.</p>
+        <br>
+        <p>To move from <strong>Discovery → Solution Design</strong>, you need to assemble a <strong>"Deal Team."</strong> Per the 2026 Partner-First strategy, this must be a partner-attached deal.</p>
+        <br>
+        <p style="font-weight:700;color:#f6821f;">Your challenge as you work through this module:</p>
+        <ul style="margin-top:8px;margin-left:20px;display:flex;flex-direction:column;gap:6px;">
+          <li>Which <strong>internal helpers</strong> (Deal Desk, Legal, Sales Ops) do you need to engage?</li>
+          <li>Which <strong>partner roles</strong> (PAM, IPAM) do you bring in?</li>
+          <li>What are the <strong>"Green Lane" rules</strong> that govern this deal?</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Kolb Step 2: Reflective Observation — Role Cards -->
+    <div class="section-card">
+      <div style="font-size:12px;font-weight:700;color:#f6821f;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Step 2 · Reflective Observation — The "Review"</div>
+      <h3>👥 The 2026 Roster: Who Is Who</h3>
+      <p class="section-desc">Flip each card to learn what each role owns. You need to know these to build your deal team. Flip all 8 to complete this activity.</p>
+      <div class="flip-grid">
+
+        <div class="flip-card" onclick="flipCard(this,'m4')">
+          <div class="flip-inner">
+            <div class="flip-front"><span class="emoji">🧑‍💼</span><p>Account Executive (AE)</p><span>Click to reveal</span></div>
+            <div class="flip-back"><p>The "CEO of the business." Leads the full sales process end-to-end — from Qualify/Discovery through to Close. Owns the customer relationship and coordinates the entire deal team.</p></div>
+          </div>
+        </div>
+
+        <div class="flip-card" onclick="flipCard(this,'m4')">
+          <div class="flip-inner">
+            <div class="flip-front"><span class="emoji">💻</span><p>Inside Sales Rep (ISR)</p><span>Click to reveal</span></div>
+            <div class="flip-back"><p>A new 2026 role for virtual selling in the Commercial segment — accounts with <strong>&lt;150 employees</strong>. 10 ISRs + 1 ISR Manager launched across APAC. Cost-effective motion for smaller accounts.</p></div>
+          </div>
+        </div>
+
+        <div class="flip-card" onclick="flipCard(this,'m4')">
+          <div class="flip-inner">
+            <div class="flip-front"><span class="emoji">🔧</span><p>SE / SA</p><span>Click to reveal</span></div>
+            <div class="flip-back"><p>Solution Engineer (SE) and Solution Architect (SA) are the technical owners. SEs lead Discovery (technical validation) and Solution Design (architecture definition). PSG specialists join for Zero Trust / CF1 opportunities.</p></div>
+          </div>
+        </div>
+
+        <div class="flip-card" onclick="flipCard(this,'m4')">
+          <div class="flip-inner">
+            <div class="flip-front"><span class="emoji">📣</span><p>BDR</p><span>Click to reveal</span></div>
+            <div class="flip-back"><p>Business Development Rep. Handles inbound and outbound lead generation — all pre-pipeline activity. Passes qualified leads to the AE. Does NOT own the sales process beyond handoff.</p></div>
+          </div>
+        </div>
+
+        <div class="flip-card" onclick="flipCard(this,'m4')">
+          <div class="flip-inner">
+            <div class="flip-front"><span class="emoji">🏦</span><p>Deal Desk (DD)</p><span>Click to reveal</span></div>
+            <div class="flip-back"><p>Centralized team managing complex or non-standard deals. Engaged when discounting exceeds <strong>80%</strong> (deal moves from Sales Manager approval to Deal Desk). Maximizes revenue and minimizes commercial risk.</p></div>
+          </div>
+        </div>
+
+        <div class="flip-card" onclick="flipCard(this,'m4')">
+          <div class="flip-inner">
+            <div class="flip-front"><span class="emoji">🤝</span><p>PAM / IPAM</p><span>Click to reveal</span></div>
+            <div class="flip-back"><p>Partner Account Manager (PAM) manages external focus partners. IPAM manages internal partner alignment. Per 2026 strategy, all deals should be partner-attached. Partners must register deals (PIO) to earn highest discounts and deal protection. Target: 90%+ partner attach by 2028.</p></div>
+          </div>
+        </div>
+
+        <div class="flip-card" onclick="flipCard(this,'m4')">
+          <div class="flip-inner">
+            <div class="flip-front"><span class="emoji">⚙️</span><p>Sales Ops &amp; Legal</p><span>Click to reveal</span></div>
+            <div class="flip-back"><p>Sales Operations handles territory carving, forecasting, and GTM planning. Legal &amp; Contracts manages redlines and ensures Enterprise Subscription Agreement (ESA) compliance. Both are engaged at the Negotiate Proposal phase.</p></div>
+          </div>
+        </div>
+
+        <div class="flip-card" onclick="flipCard(this,'m4')">
+          <div class="flip-inner">
+            <div class="flip-front"><span class="emoji">🎯</span><p>PSG &amp; Marketing</p><span>Click to reveal</span></div>
+            <div class="flip-back"><p>Product Specialization &amp; Growth (PSG) focuses on high-growth areas like Zero Trust / CF1. For Cloudflare One deals (Magic WAN / Zero Trust), always engage a Partner Service Delivery Manager (PSDM) to find an Authorized Service Delivery Partner (ASDP). Marketing / ABM warms strategic accounts with events and targeted campaigns.</p></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Kolb Step 3: Abstract Conceptualization — Animation + Sales Process -->
+    <div class="section-card">
+      <div style="font-size:12px;font-weight:700;color:#f6821f;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Step 3 · Abstract Conceptualization — The "Learn"</div>
+      <h3>🗺️ The Cloudflare Sales Process</h3>
+      <p class="section-desc">Toggle between a solo AE approach vs. the full coordinated deal team — and see which one actually closes.</p>
+      <div class="animation-toggle">
+        <button class="toggle-btn active" onclick="setAnimM4('reactive',this)">❌ Solo / Reactive</button>
+        <button class="toggle-btn" onclick="setAnimM4('consultative',this)">✅ Full Deal Team</button>
+      </div>
+      <div class="animation-stage">
+        <div class="anim-row" id="m4-anim-row">
+          <div class="anim-node"><span class="icon">🧑‍💼</span>AE gets lead</div>
+          <div class="anim-arrow bad">→</div>
+          <div class="anim-node"><span class="icon">📋</span>AE pitches alone</div>
+          <div class="anim-arrow bad">→</div>
+          <div class="anim-node"><span class="icon">💸</span>No SE, no partner, 85% discount requested</div>
+          <div class="anim-arrow bad">→</div>
+          <div class="anim-node"><span class="icon">❌</span>Deal stalls or lost</div>
+        </div>
+        <div class="anim-result bad" id="m4-anim-result">No SE for technical credibility. No partner for services delivery. Discount exceeds 80% with no Deal Desk — the deal is non-standard and at risk.</div>
+      </div>
+
+      <!-- Plan Tiers Table -->
+      <div style="margin-top:32px;">
+        <h4 style="font-size:16px;font-weight:700;margin-bottom:12px;">📋 Plan Tiers &amp; 2026 Attributes</h4>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead>
+              <tr style="background:#f6821f;color:white;">
+                <th style="padding:10px 14px;text-align:left;border-radius:8px 0 0 0;">Plan</th>
+                <th style="padding:10px 14px;text-align:left;">Target Audience</th>
+                <th style="padding:10px 14px;text-align:left;border-radius:0 8px 0 0;">Key Attributes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="background:#fff3e8;">
+                <td style="padding:10px 14px;font-weight:600;">Free</td>
+                <td style="padding:10px 14px;">Personal projects</td>
+                <td style="padding:10px 14px;">Basic CDN &amp; DDoS protection</td>
+              </tr>
+              <tr style="background:white;">
+                <td style="padding:10px 14px;font-weight:600;">Pro</td>
+                <td style="padding:10px 14px;">Professional sites</td>
+                <td style="padding:10px 14px;">Enhanced security features</td>
+              </tr>
+              <tr style="background:#fff3e8;">
+                <td style="padding:10px 14px;font-weight:600;">Business</td>
+                <td style="padding:10px 14px;">SMBs</td>
+                <td style="padding:10px 14px;">100% Uptime SLA and PCI compliance</td>
+              </tr>
+              <tr style="background:white;">
+                <td style="padding:10px 14px;font-weight:600;">Enterprise</td>
+                <td style="padding:10px 14px;">Large Corps / Gov</td>
+                <td style="padding:10px 14px;">China Network, Custom WAF, Dedicated Success teams</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drag & Drop — Role to Sales Stage -->
+    <div class="section-card">
+      <div style="font-size:12px;font-weight:700;color:#f6821f;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Step 3 (continued) · Match the Role to the Stage</div>
+      <h3>🎯 Who Does What — And When?</h3>
+      <p class="section-desc">Drag each team member / action to the correct stage of the Cloudflare sales process. Match all 5 to complete.</p>
+      <div class="drag-grid">
+        <div>
+          <div class="drag-col"><h4>Team Members / Actions</h4></div>
+          <div id="m4-drag-items">
+            <div class="drag-item" draggable="true" data-term="icp" ondragstart="dragStart(event)">BDR outbound + Marketing ABM</div>
+            <div class="drag-item" draggable="true" data-term="pain" ondragstart="dragStart(event)">AE leads, SE validates technically</div>
+            <div class="drag-item" draggable="true" data-term="roi" ondragstart="dragStart(event)">SE / SA + PSG define architecture</div>
+            <div class="drag-item" draggable="true" data-term="champion" ondragstart="dragStart(event)">AE + Deal Desk + Legal + PAM</div>
+            <div class="drag-item" draggable="true" data-term="closeplan" ondragstart="dragStart(event)">CSM + Support → Renewals (RAM)</div>
+          </div>
+          <button class="drag-reset" onclick="resetDrag('m4')">↺ Reset</button>
+        </div>
+        <div>
+          <div class="drag-col"><h4>Sales Stage</h4></div>
+          <div class="drop-zone" data-answer="icp" data-module="m4" ondragover="dragOver(event)" ondrop="drop(event,'m4')" ondragleave="dragLeave(event)"><span class="def-text">Lead Gen / Pre-Pipeline</span></div>
+          <div class="drop-zone" data-answer="pain" data-module="m4" ondragover="dragOver(event)" ondrop="drop(event,'m4')" ondragleave="dragLeave(event)"><span class="def-text">Qualify / Discovery</span></div>
+          <div class="drop-zone" data-answer="roi" data-module="m4" ondragover="dragOver(event)" ondrop="drop(event,'m4')" ondragleave="dragLeave(event)"><span class="def-text">Solution Design</span></div>
+          <div class="drop-zone" data-answer="champion" data-module="m4" ondragover="dragOver(event)" ondrop="drop(event,'m4')" ondragleave="dragLeave(event)"><span class="def-text">Negotiate Proposal</span></div>
+          <div class="drop-zone" data-answer="closeplan" data-module="m4" ondragover="dragOver(event)" ondrop="drop(event,'m4')" ondragleave="dragLeave(event)"><span class="def-text">Onboard / Renewal</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kolb Step 4: Active Experimentation — Quiz -->
+    <div class="section-card">
+      <div style="font-size:12px;font-weight:700;color:#f6821f;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Step 4 · Active Experimentation — The "Test"</div>
+      <h3>🟢 Green Lane Knowledge Check</h3>
+      <p class="section-desc">Apply the rules to your financial firm deal. Two questions — both must be answered to complete Module 4.</p>
+
+      <div class="quiz-question">
+        <h4>Q1: Your financial firm deal has complex non-standard terms and the AE is proposing 83% discounting. What must happen next?</h4>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="answer(this,false,'m4q1','Not quite — discounting above 80% moves beyond Sales Manager authority.')">A) The Sales Manager approves the discount and the deal proceeds normally.</button>
+          <button class="quiz-option" onclick="answer(this,true,'m4q1','Correct! Any deal with &gt;80% discounting moves from Sales Manager to Deal Desk for approval. Deal Desk manages complex/non-standard deals to maximise revenue and minimise risk. Engage them early — not at the last minute.')">B) The deal must be escalated to Deal Desk, as discounting exceeds the 80% Sales Manager threshold.</button>
+          <button class="quiz-option" onclick="answer(this,false,'m4q1','Not quite — this is a commercial issue for Deal Desk, not a technical architecture question for the SE.')">C) The SE re-architects the solution to reduce the price.</button>
+          <button class="quiz-option" onclick="answer(this,false,'m4q1','Not quite — Legal handles contract redlines and ESA compliance, not commercial discount approvals.')">D) Legal reviews the discount and approves it under the ESA framework.</button>
+        </div>
+        <div class="quiz-feedback" id="m4q1-feedback"></div>
+      </div>
+
+      <div class="quiz-question">
+        <h4>Q2: Your partner wants to be attached to this deal and earn the highest available discount. What must they do first?</h4>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="answer(this,false,'m4q2','Not quite — simply being on the call does not qualify a partner for deal protection or maximum discounting.')">A) Join a discovery call with the customer as proof of involvement.</button>
+          <button class="quiz-option" onclick="answer(this,false,'m4q2','Not quite — the PAM manages the partner relationship, but deal registration (PIO) is the partner\'s responsibility.')">B) Ask the PAM to register the deal on their behalf.</button>
+          <button class="quiz-option" onclick="answer(this,true,'m4q2','Correct! Partners must register deals via PIO (Partner Initiated Opportunity) to earn the highest discount tier and receive deal protection. This is a core part of the 2026 Partner-First strategy targeting 90%+ partner attach by 2028.')">C) Register the deal via PIO (Partner Initiated Opportunity) to earn deal protection and maximum discount.</button>
+          <button class="quiz-option" onclick="answer(this,false,'m4q2','Not quite — CPQv2 is for quoting, not deal registration. The partner must register via PIO first.')">D) Submit the quote through CPQv2 with their partner ID attached.</button>
+        </div>
+        <div class="quiz-feedback" id="m4q2-feedback"></div>
+      </div>
+    </div>
+
+    <!-- FY26 Updates Reference -->
+    <div class="section-card" style="border-left:4px solid #22c55e;">
+      <h3>📅 FY26 Update Notes</h3>
+      <p class="section-desc">Key changes for 2026 that every new hire needs to know.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;">
+        <div style="background:#f0fdf4;border-radius:10px;padding:18px;">
+          <div style="font-weight:700;font-size:14px;color:#22c55e;margin-bottom:6px;">🆕 ISR Launch</div>
+          <div style="font-size:13px;color:#444;line-height:1.6;">10 ISRs + 1 ISR Manager launched across APAC for the Commercial segment (&lt;150 employees). Virtual selling motion replaces field coverage for smaller accounts.</div>
+        </div>
+        <div style="background:#f0fdf4;border-radius:10px;padding:18px;">
+          <div style="font-weight:700;font-size:14px;color:#22c55e;margin-bottom:6px;">🧾 CPQv2 Transition</div>
+          <div style="font-size:13px;color:#444;line-height:1.6;">All new business is now quoted using CPQv2. Enables Bundle Products and standardized partner pricing. Old quoting tools are retired for new deals.</div>
+        </div>
+        <div style="background:#f0fdf4;border-radius:10px;padding:18px;">
+          <div style="font-weight:700;font-size:14px;color:#22c55e;margin-bottom:6px;">💰 Self-Serve Crediting</div>
+          <div style="font-size:13px;color:#444;line-height:1.6;">Sellers are now eligible for compensation credit on incremental growth within Self-Serve accounts — a new FY26 incentive to drive upsell into the long tail.</div>
+        </div>
+        <div style="background:#f0fdf4;border-radius:10px;padding:18px;">
+          <div style="font-weight:700;font-size:14px;color:#22c55e;margin-bottom:6px;">🤝 Partner-First Goal</div>
+          <div style="font-size:13px;color:#444;line-height:1.6;">Cloudflare is targeting 90%+ partner attach by 2028. Every deal should include PAM + IPAM engagement. For CF1 / Zero Trust deals, always find an ASDP via PSDM.</div>
+        </div>
+        <div style="background:#f0fdf4;border-radius:10px;padding:18px;">
+          <div style="font-weight:700;font-size:14px;color:#22c55e;margin-bottom:6px;">🌏 APAC Target</div>
+          <div style="font-size:13px;color:#444;line-height:1.6;">APAC is targeting <strong>$168M</strong> at <strong>30% YoY growth</strong> for FY26. Majors and Enterprise segments are the primary focus for high-value, partner-attached deals.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RESOURCES -->
+  <div id="resources" class="tab-panel">
+    <div class="module-header">
+      <div class="tag">Resources</div>
+      <h2>Resources &amp; Downloads</h2>
+    </div>
+    <div class="resources-grid">
+      <div class="resource-card">
+        <h3>Bootcamp Schedule</h3>
+        <p>Full agenda and calendar invites for all live bootcamp sessions.</p>
+        <a href="https://docs.google.com/document/d/1XorFgXFmuZau9MjVM5vYc7O_rHOjoE32cVJvTRJN6A0/edit?tab=t.0#heading=h.fknbucekghco" target="_blank">View Schedule →</a>
+      </div>
+      <div class="resource-card">
+        <h3>Sales Playbook</h3>
+        <p>Everything you need to know about how we sell at Cloudflare — process, roles, and deal rules.</p>
+        <a href="https://wiki.cfdata.org/spaces/SACT/pages/664817103/Sales+Content" target="_blank">View Playbook →</a>
+      </div>
+      <div class="resource-card">
+        <h3>AI Coach</h3>
+        <p>Practice your pitch and get real-time feedback before your final assessment.</p>
+        <a href="https://flarepitch.lab-nurul.workers.dev/events" target="_blank">Launch AI Coach →</a>
+      </div>
+      <div class="resource-card">
+        <h3>What is Cloudflare?</h3>
+        <p>Want to go deeper? Read Cloudflare's own Learning Center article.</p>
+        <a href="https://www.cloudflare.com/en-gb/learning/what-is-cloudflare/" target="_blank">Read Article →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MY PROGRESS DASHBOARD -->
+  <div id="dashboard" class="tab-panel">
+    <div class="module-header">
+      <div class="tag">My Progress</div>
+      <h2>Your Bootcamp Dashboard</h2>
+    </div>
+
+    <div class="cert-container" id="cert-container">
+      <h2>Congratulations, Bootcamp Graduate!</h2>
+      <p>You have completed all modules of the Revenue Essentials Bootcamp. We're proud of you!</p>
+      <div style="margin-bottom:20px;">
+        <input id="cert-name" type="text" placeholder="Enter your full name for the certificate" style="padding:12px 16px;border:2px solid #f6821f;border-radius:8px;font-size:15px;width:100%;max-width:400px;outline:none;text-align:center;" />
+      </div>
+      <button class="cert-download" onclick="downloadCert()">📄 Download My Certificate</button>
+    </div>
+
+    <div class="dashboard-hero">
+      <h2>Overall Progress</h2>
+      <p>Complete all activities in every module to finish the bootcamp.</p>
+      <div class="overall-bar-track">
+        <div class="overall-bar-fill" id="overall-fill"></div>
+      </div>
+      <div class="overall-pct" id="overall-pct">0% Complete</div>
+    </div>
+
+    <div class="module-status-grid" id="module-status-grid"></div>
+    <button class="reset-btn" onclick="resetAll()">↺ Reset All Progress</button>
+  </div>
+
+</div>
+
+<div class="footer">
+  Cloudflare Revenue Essentials Bootcamp · Built with Cloudflare Workers
+</div>
+
+<script>
+// ── Module definitions ──────────────────────────────────────
+const MODULE_DEFS = [
+  {
+    id: 'module1', label: 'Module 1: What is Cloudflare',
+    activities: [
+      {key:'m1_cards', label:'Story Cards'},
+      {key:'m1_anim', label:'Animation'},
+      {key:'m1_drag', label:'Drag & Drop'},
+      {key:'m1_quiz', label:'Quiz'},
+      {key:'m1_pitch', label:'Elevator Pitch'}
+    ]
+  },
+  {
+    id: 'module2', label: 'Module 2: Power of the Network',
+    activities: [
+      {key:'m2_cards', label:'Network Cards'},
+      {key:'m2_anim',  label:'Animation'},
+      {key:'m2_drag',  label:'Drag & Drop'},
+      {key:'m2_quiz',  label:'Quiz'}
+    ]
+  },
+  {
+    id: 'module3', label: 'Module 3: Cloudflare Portfolio',
+    activities: [
+      {key:'m3_cards', label:'Pillar Cards'},
+      {key:'m3_anim', label:'Animation'},
+      {key:'m3_drag', label:'Drag & Drop'},
+      {key:'m3_quiz', label:'Final Exam'}
+    ]
+  },
+  {
+    id: 'module4', label: 'Module 4: How We Sell',
+    activities: [
+      {key:'m4_cards', label:'Role Cards'},
+      {key:'m4_anim', label:'Animation'},
+      {key:'m4_drag', label:'Drag & Drop'},
+      {key:'m4_quiz', label:'Quiz'}
+    ]
+  }
+];
+
+// Per-module drag correct counts
+const dragCounts = { m1: 0, m2: 0, m3: 0, m4: 0 };
+const dragTotals = { m1: 5, m2: 5, m3: 5, m4: 5 };
+
+// Per-module quiz state
+const quizDone = {};
+
+// Per-module flip counts
+const flipCounts = { m1: 0, m2: 0, m3: 0, m4: 0 };
+const flipTotals = { m1: 4, m2: 5, m3: 9, m4: 8 };
+
+// ── Storage helpers ─────────────────────────────────────────
+function getSaved(key) { return localStorage.getItem(key) === 'true'; }
+function save(key) { localStorage.setItem(key, 'true'); }
+
+// ── Tab switching ───────────────────────────────────────────
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (id === 'dashboard') renderDashboard();
+  if (id === 'module1') restoreModule('m1');
+  if (id === 'module2') restoreModule('m2');
+  if (id === 'module3') restoreModule('m3');
+  if (id === 'module4') restoreModule('m4');
+}
+
+// ── Generic module progress ─────────────────────────────────
+function getModuleKeys(mod) {
+  const def = MODULE_DEFS.find(m => m.id === 'module' + mod.replace('m',''));
+  if (!def) return [];
+  return def.activities.map(a => a.key.replace(mod + '_', ''));
+}
+
+function restoreModule(mod) {
+  const keys = MODULE_DEFS.find(m => m.id === 'module' + mod.replace('m','')).activities.map(a => a.key.replace(mod+'_',''));
+  keys.forEach(k => {
+    const el = document.getElementById('step-' + mod + '-' + k);
+    if (el && getSaved(mod + '_' + k)) el.classList.add('done');
+  });
+  updateBar(mod);
+}
+
+function markActivity(mod, key) {
+  save(mod + '_' + key);
+  const el = document.getElementById('step-' + mod + '-' + key);
+  if (el) el.classList.add('done');
+  updateBar(mod);
+  saveProgress(mod + '_' + key); // sync to KV admin dashboard
+}
+
+function updateBar(mod) {
+  const def = MODULE_DEFS.find(m => m.id === 'module' + mod.replace('m',''));
+  if (!def) return;
+  const keys = def.activities.map(a => a.key);
+  const done = keys.filter(k => getSaved(k)).length;
+  const pct = Math.round((done / keys.length) * 100);
+  const fill = document.getElementById(mod + '-fill');
+  const pctEl = document.getElementById(mod + '-pct');
+  if (fill) fill.style.width = pct + '%';
+  if (pctEl) pctEl.textContent = pct + '%';
+}
+
+// ── Flip Cards ──────────────────────────────────────────────
+function flipCard(card, mod) {
+  if (!card.classList.contains('flipped')) {
+    card.classList.add('flipped');
+    flipCounts[mod] = (flipCounts[mod] || 0) + 1;
+    if (flipCounts[mod] >= flipTotals[mod]) markActivity(mod, 'cards');
+  }
+}
+
+// ── Module 1 backward compat ────────────────────────────────
+function restoreM1() { restoreModule('m1'); }
+
+// ── Animation: Module 1 ─────────────────────────────────────
+function setAnim(mode, btn, mod) {
+  btn.closest('.animation-toggle').querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const row = document.getElementById(mod + '-anim-row');
+  const result = document.getElementById(mod + '-anim-result');
+  if (mode === 'without') {
+    row.innerHTML = `
+      <div class="anim-node"><span class="icon">👤</span>User</div>
+      <div class="anim-arrow bad">→</div>
+      <div class="anim-node"><span class="icon">💻</span>Website</div>
+      <div class="anim-arrow bad">→</div>
+      <div class="anim-node"><span class="icon">💥</span>Server Crash</div>`;
+    result.className = 'anim-result bad';
+    result.textContent = 'The server is overwhelmed and crashes. Nobody can access the website.';
+  } else {
+    row.innerHTML = `
+      <div class="anim-node"><span class="icon">👤</span>User</div>
+      <div class="anim-arrow">→</div>
+      <div class="anim-node" style="border:2px solid #f6821f"><span class="icon">🧡</span>Cloudflare</div>
+      <div class="anim-arrow">→</div>
+      <div class="anim-node"><span class="icon">✅</span>Server Safe</div>`;
+    result.className = 'anim-result good';
+    result.textContent = 'Cloudflare absorbs the traffic, blocks threats, and the website stays fast and online.';
+    markActivity(mod, 'anim');
+  }
+}
+
+// ── Animation: Module 2 ─────────────────────────────────────
+function setAnimM2(mode, btn) {
+  btn.closest('.animation-toggle').querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const row = document.getElementById('m2-anim-row');
+  const result = document.getElementById('m2-anim-result');
+  if (mode === 'scrubbing') {
+    row.innerHTML = `
+      <div class="anim-node"><span class="icon">🌐</span>Internet Traffic</div>
+      <div class="anim-arrow bad">→</div>
+      <div class="anim-node"><span class="icon">🏭</span>Scrubbing Center<br><small style="font-size:11px;font-weight:400">(centralised, 15 Tbps)</small></div>
+      <div class="anim-arrow bad">→</div>
+      <div class="anim-node"><span class="icon">⏳</span>Added Latency Hop</div>
+      <div class="anim-arrow bad">→</div>
+      <div class="anim-node"><span class="icon">🏢</span>Customer DC</div>`;
+    result.className = 'anim-result bad';
+    result.textContent = 'Centralised scrubbing adds latency and has limited capacity. Against a 31.4 Tbps attack, most competitors would be overwhelmed and go offline.';
+  } else {
+    row.innerHTML = `
+      <div class="anim-node"><span class="icon">💥</span>Attack Traffic<br><small style="font-size:11px;font-weight:400">(from any direction)</small></div>
+      <div class="anim-arrow">→</div>
+      <div class="anim-node" style="border:2px solid #f6821f;min-width:160px"><span class="icon">🧡</span>Cloudflare Edge<br><small style="font-weight:400;font-size:11px">330+ PoPs · 477 Tbps · ~3s mitigation</small></div>
+      <div class="anim-arrow">→</div>
+      <div class="anim-node"><span class="icon">✅</span>Clean Traffic<br><small style="font-size:11px;font-weight:400">to Customer DC</small></div>`;
+    result.className = 'anim-result good';
+    result.textContent = 'Cloudflare absorbs attack traffic at the nearest PoP — closest to the source. No backhaul, no added latency, and 477 Tbps of capacity means no attack has ever overwhelmed it.';
+    markActivity('m2', 'anim');
+  }
+}
+
+// ── Animation: Module 3 ─────────────────────────────────────
+function setAnimM3(mode, btn) {
+  btn.closest('.animation-toggle').querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const row = document.getElementById('m3-anim-row');
+  const result = document.getElementById('m3-anim-result');
+  if (mode === 'before') {
+    row.innerHTML = `
+      <div class="anim-node"><span class="icon">🔐</span>Legacy VPN</div>
+      <div class="anim-arrow bad">+</div>
+      <div class="anim-node"><span class="icon">🧱</span>On-prem Firewall</div>
+      <div class="anim-arrow bad">+</div>
+      <div class="anim-node"><span class="icon">📧</span>Email Filter</div>
+      <div class="anim-arrow bad">+</div>
+      <div class="anim-node"><span class="icon">🌐</span>CDN Vendor</div>`;
+    result.className = 'anim-result bad';
+    result.textContent = 'Four separate vendors. Four contracts. Four dashboards. Gaps between tools create security risk and operational complexity.';
+  } else {
+    row.innerHTML = `
+      <div class="anim-node"><span class="icon">🧑‍💼</span>Employee / App</div>
+      <div class="anim-arrow">→</div>
+      <div class="anim-node" style="border:2px solid #f6821f;min-width:160px"><span class="icon">🧡</span>Cloudflare ONE<br><small style="font-weight:400;font-size:11px">Access · Gateway · WAF · Email · CDN</small></div>
+      <div class="anim-arrow">→</div>
+      <div class="anim-node"><span class="icon">✅</span>Secured &amp; Fast</div>`;
+    result.className = 'anim-result good';
+    result.textContent = 'One platform, one dashboard, one vendor — full-stack security and performance with no gaps between tools.';
+    markActivity('m3', 'anim');
+  }
+}
+
+// ── Animation: Module 4 ─────────────────────────────────────
+function setAnimM4(mode, btn) {
+  btn.closest('.animation-toggle').querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const row = document.getElementById('m4-anim-row');
+  const result = document.getElementById('m4-anim-result');
+  if (mode === 'reactive') {
+    row.innerHTML = `
+      <div class="anim-node"><span class="icon">🧑‍💼</span>AE gets lead</div>
+      <div class="anim-arrow bad">→</div>
+      <div class="anim-node"><span class="icon">📋</span>AE pitches alone</div>
+      <div class="anim-arrow bad">→</div>
+      <div class="anim-node"><span class="icon">💸</span>No SE, no partner, 85% discount requested</div>
+      <div class="anim-arrow bad">→</div>
+      <div class="anim-node"><span class="icon">❌</span>Deal stalls or lost</div>`;
+    result.className = 'anim-result bad';
+    result.textContent = 'No SE for technical credibility. No partner for services delivery. Discount exceeds 80% with no Deal Desk — the deal is non-standard and at risk.';
+  } else {
+    row.innerHTML = `
+      <div class="anim-node"><span class="icon">📣</span>BDR passes lead<br><small style="font-size:11px;font-weight:400">pre-pipeline</small></div>
+      <div class="anim-arrow">→</div>
+      <div class="anim-node"><span class="icon">🧑‍💼</span>AE + SE<br><small style="font-size:11px;font-weight:400">Qualify & Discovery</small></div>
+      <div class="anim-arrow">→</div>
+      <div class="anim-node" style="border:2px solid #f6821f"><span class="icon">🤝</span>AE + DD + Legal + PAM<br><small style="font-size:11px;font-weight:400">Partner-First Proposal</small></div>
+      <div class="anim-arrow">→</div>
+      <div class="anim-node"><span class="icon">✅</span>Deal closed<br><small style="font-size:11px;font-weight:400">CSM handshake</small></div>`;
+    result.className = 'anim-result good';
+    result.textContent = 'Full deal team: BDR → AE+SE (Discovery) → SE/SA+PSG (Solution Design) → AE+Deal Desk+Legal+PAM (Negotiate) → CSM+RAM (Renewal). Partner attached. CPQv2 quoted. Deal Desk approved.';
+    markActivity('m4', 'anim');
+  }
+}
+
+// ── Drag and Drop ───────────────────────────────────────────
+let draggedTerm = null;
+
+function dragStart(e) {
+  draggedTerm = e.target.dataset.term;
+  e.target.classList.add('dragging');
+  setTimeout(() => e.target.classList.remove('dragging'), 0);
+}
+function dragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function dragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+
+function drop(e, mod) {
+  e.preventDefault();
+  const zone = e.currentTarget;
+  zone.classList.remove('drag-over');
+  if (zone.classList.contains('correct')) return;
+  if (draggedTerm === zone.dataset.answer) {
+    zone.classList.add('correct');
+    zone.innerHTML = '✅ ' + dragTermLabel(draggedTerm, mod);
+    removeDragItem(draggedTerm, mod);
+    dragCounts[mod] = (dragCounts[mod] || 0) + 1;
+    if (dragCounts[mod] >= dragTotals[mod]) markActivity(mod, 'drag');
+  } else {
+    zone.classList.add('incorrect');
+    setTimeout(() => zone.classList.remove('incorrect'), 800);
+  }
+}
+
+function dragTermLabel(t, mod) {
+  const labels = {
+    // m1
+    ddos:'DDoS Attack', ssl:'SSL', cdn:'CDN', firewall:'Firewall', edge:'Edge Network',
+    // m2
+    mt:'Magic Transit', spectrum:'Spectrum', netfw:'Network Firewall', cni:'Network Interconnect (CNI)', argo:'Argo Smart Routing',
+    // m3
+    p1a:'"Our site crashed on Black Friday from fake traffic"', p1b:'"Hackers are exploiting our login API"', p2a:'"Staff working from Starbucks — VPN is too slow"', p2b:'"Our CFO nearly got phished by a fake invoice"', p3a:'"AWS is too expensive to run our AI chatbot"',
+    // m4
+    icp:'BDR outbound + Marketing ABM', pain:'AE leads, SE validates technically', roi:'SE / SA + PSG define architecture', champion:'AE + Deal Desk + Legal + PAM', closeplan:'CSM + Support → Renewals (RAM)'
+  };
+  return labels[t] || t;
+}
+
+function removeDragItem(term, mod) {
+  document.querySelectorAll('#' + mod + '-drag-items .drag-item').forEach(i => {
+    if (i.dataset.term === term) i.remove();
+  });
+}
+
+function resetDrag(mod) {
+  dragCounts[mod] = 0;
+  const items = {
+    m1: [
+      {term:'ddos', label:'DDoS Attack'}, {term:'ssl', label:'SSL'},
+      {term:'cdn', label:'CDN'}, {term:'firewall', label:'Firewall'}, {term:'edge', label:'Edge Network'}
+    ],
+    m2: [
+      {term:'mt', label:'Magic Transit'},
+      {term:'spectrum', label:'Spectrum'},
+      {term:'netfw', label:'Network Firewall'},
+      {term:'cni', label:'Network Interconnect (CNI)'},
+      {term:'argo', label:'Argo Smart Routing'}
+    ],
+    m3: [
+      {term:'p1a', label:'"Our site crashed on Black Friday from fake traffic"'},
+      {term:'p1b', label:'"Hackers are exploiting our login API"'},
+      {term:'p2a', label:'"Staff working from Starbucks — VPN is too slow"'},
+      {term:'p2b', label:'"Our CFO nearly got phished by a fake invoice"'},
+      {term:'p3a', label:'"AWS is too expensive to run our AI chatbot"'}
+    ],
+    m4: [
+      {term:'icp', label:'BDR outbound + Marketing ABM'},
+      {term:'pain', label:'AE leads, SE validates technically'},
+      {term:'roi', label:'SE / SA + PSG define architecture'},
+      {term:'champion', label:'AE + Deal Desk + Legal + PAM'},
+      {term:'closeplan', label:'CSM + Support → Renewals (RAM)'}
+    ]
+  };
+  const defs = {
+    m1: {ddos:'Flooding a website with fake traffic to crash it', ssl:"The padlock encrypting your connection (the 's' in https)", cdn:'Serving content from the city closest to you', firewall:'A digital bouncer that blocks bad traffic', edge:"Cloudflare's 330+ buildings around the world"},
+    m2: {mt:'Protects entire IP address ranges (prefixes) from L3 DDoS attacks using BGP routing', spectrum:'Reverse-proxy that protects any TCP/UDP application at Layer 4 — not just websites', netfw:'Cloud-native firewall enforcing consistent policies across branch offices, data centers, and cloud — no appliances', cni:'Private direct connection between customer network and Cloudflare — like AWS Direct Connect but for Cloudflare', argo:'Intelligently routes traffic around internet congestion — makes web assets 30% faster on average'},
+    m3: {p1a:'🛡️ Pillar 1 — Application Services (DDoS Protection)', p1b:'🛡️ Pillar 1 — Application Services (API Security / WAF)', p2a:'🔐 Pillar 2 — SASE & Networking (Zero Trust / Access)', p2b:'🔐 Pillar 2 — SASE & Networking (Email Security)', p3a:'🛠️ Pillar 3 — Developer Platform (Workers AI)'},
+    m4: {icp:'Lead Gen / Pre-Pipeline', pain:'Qualify / Discovery', roi:'Solution Design', champion:'Negotiate Proposal', closeplan:'Onboard / Renewal'}
+  };
+
+  const container = document.getElementById(mod + '-drag-items');
+  container.innerHTML = items[mod].map(i =>
+    `<div class="drag-item" draggable="true" data-term="${i.term}" ondragstart="dragStart(event)">${i.label}</div>`
+  ).join('');
+
+  document.querySelectorAll('.drop-zone[data-module="' + mod + '"]').forEach(z => {
+    z.className = 'drop-zone';
+    z.setAttribute('ondragover', 'dragOver(event)');
+    z.setAttribute('ondrop', 'drop(event,\'' + mod + '\')');
+    z.setAttribute('ondragleave', 'dragLeave(event)');
+    z.innerHTML = '<span class="def-text">' + defs[mod][z.dataset.answer] + '</span>';
+  });
+}
+
+// ── Quiz ────────────────────────────────────────────────────
+function answer(btn, correct, qid, msg) {
+  if (quizDone[qid]) return;
+  quizDone[qid] = true;
+  btn.closest('.quiz-options').querySelectorAll('.quiz-option').forEach(o => o.disabled = true);
+  btn.classList.add(correct ? 'correct' : 'incorrect');
+  const fb = document.getElementById(qid + '-feedback');
+  fb.textContent = msg;
+  fb.className = 'quiz-feedback show ' + (correct ? 'correct' : 'incorrect');
+
+  // Check if all questions in this module's quiz are done
+  const mod = qid.replace(/q\d+$/, '');
+  const q1done = quizDone[mod + 'q1'];
+  const q2done = quizDone[mod + 'q2'];
+  const q3done = quizDone[mod + 'q3'];
+  // Module 3 has 3 questions; others have 2
+  if (mod === 'm3') {
+    if (q1done && q2done && q3done) markActivity(mod, 'quiz');
+  } else {
+    if (q1done && q2done) markActivity(mod, 'quiz');
+  }
+}
+
+// ── Elevator Pitch (Module 1) ────────────────────────────────
+let pitchInterval = null;
+let pitchSeconds = 120;
+let recognition = null;
+let fullTranscript = '';
+
+const KEYWORDS = [
+  {label:'Security', words:['security','secure','protection','protect','waf','firewall','sql injection']},
+  {label:'DDoS', words:['ddos','denial of service','attack']},
+  {label:'Performance / CDN', words:['cdn','content delivery','cache','latency','faster','speed','performance']},
+  {label:'Reliability', words:['reliability','reliable','load balancing','dns','1.1.1.1','uptime','online']},
+  {label:'Global Network', words:['330','data center','cities','worldwide','global','network','edge']},
+  {label:'Edge / Workers', words:['workers','edge computing','edge network','developer']},
+  {label:'Zero Trust / WARP', words:['zero trust','warp','vpn']},
+  {label:'Reverse Proxy', words:['reverse proxy','proxy']},
+  {label:'Market Reach', words:['20%','twenty percent','millions','websites']}
+];
+
+function startPitch() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    document.getElementById('pitch-status').textContent = 'Your browser does not support speech recognition. Please use Chrome.';
+    return;
+  }
+  fullTranscript = '';
+  pitchSeconds = 120;
+  document.getElementById('pitch-feedback').className = 'pitch-feedback';
+  document.getElementById('pitch-transcript').style.display = 'none';
+  document.getElementById('pitch-transcript').textContent = '';
+  document.getElementById('pitch-start-btn').style.display = 'none';
+  document.getElementById('pitch-stop-btn').style.display = 'inline-block';
+  document.getElementById('pitch-status').textContent = 'Recording... speak clearly!';
+
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = 'en-US';
+  recognition.onresult = (e) => {
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) fullTranscript += e.results[i][0].transcript + ' ';
+      else interim += e.results[i][0].transcript;
+    }
+    const el = document.getElementById('pitch-transcript');
+    el.style.display = 'block';
+    el.textContent = fullTranscript + interim;
+  };
+  recognition.start();
+
+  pitchInterval = setInterval(() => {
+    pitchSeconds--;
+    const m = Math.floor(pitchSeconds / 60);
+    const s = pitchSeconds % 60;
+    document.getElementById('pitch-timer').textContent = m + ':' + String(s).padStart(2, '0');
+    if (pitchSeconds <= 0) stopPitch();
+  }, 1000);
+}
+
+function stopPitch() {
+  clearInterval(pitchInterval);
+  if (recognition) recognition.stop();
+  document.getElementById('pitch-start-btn').style.display = 'inline-block';
+  document.getElementById('pitch-stop-btn').style.display = 'none';
+  document.getElementById('pitch-status').textContent = 'Recording complete! Here is your feedback:';
+  document.getElementById('pitch-timer').textContent = '2:00';
+  showPitchFeedback();
+  markActivity('m1', 'pitch');
+}
+
+function showPitchFeedback() {
+  const text = fullTranscript.toLowerCase();
+  const timeUsed = 120 - pitchSeconds;
+  const mins = Math.floor(timeUsed / 60);
+  const secs = timeUsed % 60;
+
+  const found = [];
+  const missing = [];
+  KEYWORDS.forEach(kw => {
+    const hit = kw.words.some(w => text.includes(w));
+    if (hit) found.push(kw.label);
+    else missing.push(kw.label);
+  });
+
+  const score = Math.round((found.length / KEYWORDS.length) * 100);
+
+  let timeFeedback = '';
+  if (timeUsed < 30) timeFeedback = 'Very short — try to speak for the full 2 minutes.';
+  else if (timeUsed < 90) timeFeedback = 'Good start! Try to use the full 2 minutes next time.';
+  else timeFeedback = 'Great timing — you used the full 2 minutes!';
+
+  let tip = '';
+  if (missing.includes('Reverse Proxy')) tip = 'Tip: Try mentioning that Cloudflare acts as a reverse proxy — it\'s a great technical differentiator.';
+  else if (missing.includes('Zero Trust / WARP')) tip = 'Tip: Mention Zero Trust and WARP — these are key enterprise products customers love.';
+  else if (missing.includes('Market Reach')) tip = 'Tip: Drop in the "20% of all websites" stat — it builds instant credibility with customers.';
+  else if (missing.includes('Edge / Workers')) tip = 'Tip: Mention Cloudflare Workers — it shows you understand Cloudflare\'s developer platform.';
+  else tip = 'Tip: Try opening with a customer problem before jumping into what Cloudflare does. e.g. "Many businesses struggle with..."';
+
+  const fb = document.getElementById('pitch-feedback');
+  fb.className = 'pitch-feedback show';
+  fb.innerHTML = `
+    <h4>Your Pitch Feedback</h4>
+    <div class="feedback-row"><span class="badge">⏱️</span><span>Time: ${mins}m ${secs}s — ${timeFeedback}</span></div>
+    <div class="feedback-row"><span class="badge">📊</span><span>Coverage score: <strong>${score}%</strong> of key topics mentioned</span></div>
+    <div class="feedback-row">
+      <span class="badge">✅</span>
+      <div>
+        <strong>Topics you covered:</strong>
+        <div class="keyword-grid">
+          ${found.length ? found.map(f => `<span class="keyword-tag found">✅ ${f}</span>`).join('') : '<span style="color:#aaa;font-size:13px">None detected yet</span>'}
+        </div>
+      </div>
+    </div>
+    ${missing.length ? `
+    <div class="feedback-row">
+      <span class="badge">⬜</span>
+      <div>
+        <strong>Topics to add next time:</strong>
+        <div class="keyword-grid">
+          ${missing.map(m => `<span class="keyword-tag missing">⬜ ${m}</span>`).join('')}
+        </div>
+      </div>
+    </div>` : ''}
+    <div class="pitch-tip">${tip}</div>
+    <div class="feedback-row" style="margin-top:16px"><span class="badge">🎉</span><span>Great work practising your pitch! Record again anytime to improve your score.</span></div>
+  `;
+}
+
+// ── Dashboard ───────────────────────────────────────────────
+function renderDashboard() {
+  let totalActs = 0;
+  let doneActs = 0;
+  const grid = document.getElementById('module-status-grid');
+  grid.innerHTML = '';
+
+  MODULE_DEFS.forEach(mod => {
+    const actDone = mod.activities.filter(a => getSaved(a.key)).length;
+    const actTotal = mod.activities.length;
+    totalActs += actTotal;
+    doneActs += actDone;
+
+    let status = 'not-started';
+    let badgeClass = 'badge-notstarted';
+    let badgeLabel = 'Not Started';
+    if (actDone === actTotal) { status = 'complete'; badgeClass = 'badge-complete'; badgeLabel = '✅ Complete'; }
+    else if (actDone > 0) { status = 'in-progress'; badgeClass = 'badge-progress'; badgeLabel = 'In Progress'; }
+
+    const pills = mod.activities.map(a =>
+      `<span class="activity-pill ${getSaved(a.key) ? 'done' : 'pending'}">${getSaved(a.key) ? '✅' : '⬜'} ${a.label}</span>`
+    ).join('');
+
+    grid.innerHTML += `
+      <div class="module-status-card ${status}">
+        <h4>${mod.label}</h4>
+        <span class="module-status-badge ${badgeClass}">${badgeLabel}</span>
+        <div class="activity-list">${pills}</div>
+      </div>`;
+  });
+
+  const pct = Math.round((doneActs / totalActs) * 100);
+  document.getElementById('overall-fill').style.width = pct + '%';
+  document.getElementById('overall-pct').textContent = pct + '% Complete';
+
+  const cert = document.getElementById('cert-container');
+  if (pct === 100) cert.classList.add('show');
+  else cert.classList.remove('show');
+}
+
+// ── Certificate ─────────────────────────────────────────────
+function downloadCert() {
+  const nameInput = document.getElementById('cert-name').value.trim();
+  const name = nameInput || 'Bootcamp Graduate';
+  const today = new Date().toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'});
+  const w = window.open('', '_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>Certificate of Completion</title>
+  <style>
+    body{font-family:Georgia,serif;background:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}
+    .cert{border:8px solid #f6821f;border-radius:16px;padding:64px;max-width:700px;text-align:center}
+    .cert-logo{font-size:48px;margin-bottom:8px}
+    .cert-brand{font-size:28px;font-weight:bold;color:#f6821f;letter-spacing:2px;margin-bottom:32px}
+    .cert-title{font-size:40px;font-weight:bold;color:#1a1a1a;margin-bottom:24px}
+    .cert-body{font-size:20px;color:#444;margin-bottom:8px;line-height:1.8}
+    .cert-name{font-size:32px;font-weight:bold;color:#f6821f;border-bottom:2px solid #f6821f;display:inline-block;padding-bottom:4px;margin:16px 0}
+    .cert-course{font-size:22px;color:#1a1a1a;font-weight:bold;margin-bottom:32px}
+    .cert-date{font-size:16px;color:#888;margin-top:32px}
+    .cert-seal{font-size:64px;margin-top:24px}
+    @media print{body{background:white}}
+  </style></head><body>
+  <div class="cert">
+    <div class="cert-logo">☁️</div>
+    <div class="cert-brand">CLOUDFLARE</div>
+    <div class="cert-title">Certificate of Completion</div>
+    <div class="cert-body">This certifies that</div>
+    <div class="cert-name">${name}</div>
+    <div class="cert-body">has successfully completed</div>
+    <div class="cert-course">Revenue Essentials Virtual Bootcamp</div>
+    <div class="cert-body">including all modules, activities, and the elevator pitch assessment.</div>
+    <div class="cert-date">Completed on ${today}</div>
+    <div class="cert-seal">🏆</div>
+  </div>
+  <script>window.onload=()=>window.print()<\/script>
+  </body></html>`);
+  w.document.close();
+}
+
+// ── Reset all ───────────────────────────────────────────────
+function resetAll() {
+  if (!confirm('Are you sure you want to reset all your progress? This cannot be undone.')) return;
+  MODULE_DEFS.forEach(mod => mod.activities.forEach(a => localStorage.removeItem(a.key)));
+  renderDashboard();
+  alert('Progress reset! Refresh the page to start fresh.');
+}
+
+// ── Learner name & KV sync ───────────────────────────────────
+function getLearnerName() { return localStorage.getItem('learner_name') || ''; }
+
+function saveLearnerName() {
+  const val = document.getElementById('name-input').value.trim();
+  if (!val) { document.getElementById('name-input').style.borderColor = '#ef4444'; return; }
+  localStorage.setItem('learner_name', val);
+  document.getElementById('name-overlay').classList.add('hidden');
+  // Sync any existing progress already saved in localStorage
+  syncAllProgress();
+}
+
+function saveProgress(key) {
+  const name = getLearnerName();
+  if (!name) return;
+  fetch('/progress', {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: name, key: key })
+  }).catch(() => {}); // silent fail — localStorage is source of truth
+}
+
+function syncAllProgress() {
+  // Push all already-completed activities to KV
+  MODULE_DEFS.forEach(mod => {
+    mod.activities.forEach(a => {
+      if (getSaved(a.key)) saveProgress(a.key);
+    });
+  });
+}
+
+// ── Init ────────────────────────────────────────────────────
+// Show name prompt if no name saved yet
+if (!getLearnerName()) {
+  document.getElementById('name-overlay').classList.remove('hidden');
+} else {
+  document.getElementById('name-overlay').classList.add('hidden');
+}
+
+restoreModule('m1');
+resetDrag('m2');
+restoreModule('m2');
+</script>
+</body>
+</html>
