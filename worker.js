@@ -130,15 +130,15 @@ async function handleAdmin(request, env) {
     .header { background: #f6821f; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; }
     .header h1 { color: white; font-size: 20px; font-weight: 700; }
     .header a { background: white; color: #f6821f; padding: 8px 20px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 14px; }
-    .content { max-width: 1200px; margin: 32px auto; padding: 0 32px; }
+    .content { max-width: 1400px; margin: 32px auto; padding: 0 32px; }
     .summary { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
     .stat-card { background: white; border-radius: 12px; padding: 20px 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); flex: 1; min-width: 160px; }
     .stat-card .num { font-size: 36px; font-weight: 700; color: #f6821f; }
     .stat-card .label { font-size: 13px; color: #888; margin-top: 4px; }
-    .table-wrap { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; }
+    .table-wrap { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; }
-    th { background: #f8f8f8; padding: 14px 16px; text-align: left; font-size: 12px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #e8e8e8; }
-    td { padding: 14px 16px; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+    th { background: #f8f8f8; padding: 12px 12px; text-align: left; font-size: 12px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #e8e8e8; white-space: nowrap; }
+    td { padding: 12px 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px; white-space: nowrap; }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: #fff9f5; }
     .bar-wrap { display: flex; align-items: center; gap: 8px; }
