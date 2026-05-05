@@ -28,7 +28,7 @@ export default {
     }
 
     // ── Sync start dates from Google Sheet ──────────────
-    if (url.pathname === '/admin/sync-dates' && request.method === 'POST') {
+    if (url.pathname === '/api/sync-dates' && request.method === 'POST') {
       return handleSyncDates(request, env);
     }
 
