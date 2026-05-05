@@ -1,4 +1,5 @@
 const ADMIN_PASSWORD = 'cfadmin2026';
+const SYNC_API_KEY = 'bcamp-sync-9f3k7x2m4q8w';
 
 const MODULE_ACTIVITIES = {
   module1: ['cards', 'anim', 'drag', 'quiz', 'pitch'],
@@ -346,8 +347,8 @@ async function handleArchive(request, env) {
 
 // ── Sync start dates from Google Sheet ────────────────────
 async function handleSyncDates(request, env) {
-  const authHeader = request.headers.get('Authorization');
-  if (!authHeader || !checkAuth(authHeader)) {
+  const apiKey = request.headers.get('X-API-Key');
+  if (!apiKey || apiKey !== SYNC_API_KEY) {
     return new Response('Unauthorized', { status: 401 });
   }
 
