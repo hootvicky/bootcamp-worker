@@ -16,6 +16,11 @@ export default {
       return handleAdmin(request, env);
     }
 
+    // ── Delete learner ─────────────────────────────────
+    if (url.pathname === '/admin/delete' && request.method === 'POST') {
+      return handleDelete(request, env);
+    }
+
     // ── Export CSV ─────────────────────────────────────
     if (url.pathname === '/export') {
       return handleExport(request, env);
@@ -103,6 +108,7 @@ async function handleAdmin(request, env) {
         <td><strong>${overall}%</strong></td>
         <td>${complete ? '✅' : '❌'}</td>
         <td>${r._lastActive || 'N/A'}</td>
+        <td><button class="del-btn" data-name="${(r._name || '').replace(/"/g, '&quot;')}" title="Remove learner">🗑️</button></td>
       </tr>`;
   }).join('');
 
@@ -141,6 +147,8 @@ async function handleAdmin(request, env) {
     .bar-fill.full { background: #22c55e; }
     .pct { font-size: 13px; font-weight: 600; color: #666; }
     .footer { text-align: center; padding: 24px; color: #aaa; font-size: 13px; }
+    .del-btn { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.15s; }
+    .del-btn:hover { background: #dc2626; color: white; }
   </style>
 </head>
 <body>
@@ -167,21 +175,70 @@ async function handleAdmin(request, env) {
             <th>Overall</th>
             <th>Complete</th>
             <th>Last Active</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          ${rows.length ? rows : '<tr><td colspan="8" style="text-align:center;color:#aaa;padding:32px">No learners yet — share the bootcamp link to get started!</td></tr>'}
+          ${rows.length ? rows : '<tr><td colspan="9" style="text-align:center;color:#aaa;padding:32px">No learners yet — share the bootcamp link to get started!</td></tr>'}
         </tbody>
       </table>
     </div>
   </div>
   <div class="footer">Revenue Essentials Bootcamp · Admin View</div>
+  <script>
+    document.querySelectorAll('.del-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const name = btn.dataset.name;
+        if (!confirm('Remove "' + name + '" from the bootcamp? This cannot be undone.')) return;
+        btn.disabled = true;
+        btn.textContent = '…';
+        try {
+          const res = await fetch('/admin/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name })
+          });
+          if (res.ok) {
+            btn.closest('tr').remove();
+          } else {
+            alert('Failed to delete: ' + await res.text());
+            btn.disabled = false;
+            btn.textContent = '🗑️';
+          }
+        } catch (e) {
+          alert('Error: ' + e.message);
+          btn.disabled = false;
+          btn.textContent = '🗑️';
+        }
+      });
+    });
+  </script>
 </body>
 </html>`;
 
   return new Response(html, {
     headers: { 'Content-Type': 'text/html' }
   });
+}
+
+// ── Delete learner from KV ─────────────────────────────────
+async function handleDelete(request, env) {
+  const authHeader = request.headers.get('Authorization');
+  if (!authHeader || !checkAuth(authHeader)) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  try {
+    const { name } = await request.json();
+    if (!name) {
+      return new Response('Missing name', { status: 400 });
+    }
+
+    await env.BOOTCAMP_PROGRESS.delete(name);
+    return new Response('Deleted', { status: 200 });
+  } catch (e) {
+    return new Response('Error: ' + e.message, { status: 500 });
+  }
 }
 
 // ── Export CSV ─────────────────────────────────────────────
