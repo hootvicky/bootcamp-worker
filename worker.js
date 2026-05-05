@@ -21,6 +21,16 @@ export default {
       return handleDelete(request, env);
     }
 
+    // ── Archive/unarchive learner ───────────────────────
+    if (url.pathname === '/admin/archive' && request.method === 'POST') {
+      return handleArchive(request, env);
+    }
+
+    // ── Sync start dates from Google Sheet ──────────────
+    if (url.pathname === '/admin/sync-dates' && request.method === 'POST') {
+      return handleSyncDates(request, env);
+    }
+
     // ── Export CSV ─────────────────────────────────────
     if (url.pathname === '/export') {
       return handleExport(request, env);
@@ -90,29 +100,40 @@ async function handleAdmin(request, env) {
     if (data) records.push(data);
   }
 
-  // Build HTML
-  const rows = records.map(r => {
+  // Split records into active and archived
+  const activeRecords = records.filter(r => !r._archived);
+  const archivedRecords = records.filter(r => r._archived);
+
+  // Build HTML rows
+  function buildRow(r, isArchived) {
     const m1 = calcPct(r, 'module1');
     const m2 = calcPct(r, 'module2');
     const m3 = calcPct(r, 'module3');
     const m4 = calcPct(r, 'module4');
     const overall = Math.round((m1 + m2 + m3 + m4) / 4);
     const complete = overall === 100;
-    return `
-      <tr>
-        <td>${r._name || 'Unknown'}</td>
-        <td>${bar(m1)}</td>
-        <td>${bar(m2)}</td>
-        <td>${bar(m3)}</td>
-        <td>${bar(m4)}</td>
-        <td><strong>${overall}%</strong></td>
-        <td>${complete ? '✅' : '❌'}</td>
-        <td>${r._lastActive || 'N/A'}</td>
-        <td><button class="del-btn" data-name="${(r._name || '').replace(/"/g, '&quot;')}" title="Remove learner">🗑️</button></td>
-      </tr>`;
-  }).join('');
+    const escapedName = (r._name || '').replace(/"/g, '&quot;');
+    const archiveBtn = isArchived
+      ? '<button class="archive-btn unarchive" data-name="' + escapedName + '" title="Unarchive">📥</button>'
+      : '<button class="archive-btn" data-name="' + escapedName + '" title="Archive">📦</button>';
+    return '<tr' + (isArchived ? ' style="opacity:0.55"' : '') + '>' +
+      '<td>' + (r._name || 'Unknown') + '</td>' +
+      '<td>' + (r._startDate || 'N/A') + '</td>' +
+      '<td>' + bar(m1) + '</td>' +
+      '<td>' + bar(m2) + '</td>' +
+      '<td>' + bar(m3) + '</td>' +
+      '<td>' + bar(m4) + '</td>' +
+      '<td><strong>' + overall + '%</strong></td>' +
+      '<td>' + (complete ? '✅' : '❌') + '</td>' +
+      '<td>' + (r._lastActive || 'N/A') + '</td>' +
+      '<td>' + archiveBtn + ' <button class="del-btn" data-name="' + escapedName + '" title="Remove learner">🗑️</button></td>' +
+      '</tr>';
+  }
 
-  const completed = records.filter(r => {
+  const activeRows = activeRecords.map(r => buildRow(r, false)).join('');
+  const archivedRows = archivedRecords.map(r => buildRow(r, true)).join('');
+
+  const completed = activeRecords.filter(r => {
     const m1=calcPct(r,'module1'),m2=calcPct(r,'module2'),
           m3=calcPct(r,'module3'),m4=calcPct(r,'module4');
     return Math.round((m1+m2+m3+m4)/4) === 100;
@@ -127,10 +148,11 @@ async function handleAdmin(request, env) {
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f6f6f6; color: #1a1a1a; }
-    .header { background: #f6821f; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; }
+    .header { background: #f6821f; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
     .header h1 { color: white; font-size: 20px; font-weight: 700; }
-    .header a { background: white; color: #f6821f; padding: 8px 20px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 14px; }
-    .content { max-width: 1400px; margin: 32px auto; padding: 0 32px; }
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+    .header-actions a, .header-actions button { background: white; color: #f6821f; padding: 8px 20px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 14px; border: none; cursor: pointer; }
+    .content { max-width: 1500px; margin: 32px auto; padding: 0 32px; }
     .summary { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
     .stat-card { background: white; border-radius: 12px; padding: 20px 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); flex: 1; min-width: 160px; }
     .stat-card .num { font-size: 36px; font-weight: 700; color: #f6821f; }
@@ -149,25 +171,38 @@ async function handleAdmin(request, env) {
     .footer { text-align: center; padding: 24px; color: #aaa; font-size: 13px; }
     .del-btn { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.15s; }
     .del-btn:hover { background: #dc2626; color: white; }
+    .archive-btn { background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.15s; }
+    .archive-btn:hover { background: #0369a1; color: white; }
+    .archive-btn.unarchive { background: #f0fdf4; color: #16a34a; border-color: #86efac; }
+    .archive-btn.unarchive:hover { background: #16a34a; color: white; }
+    .archived-section { margin-top: 32px; }
+    .archived-toggle { background: white; border: 2px solid #e8e8e8; border-radius: 10px; padding: 12px 20px; cursor: pointer; font-size: 14px; font-weight: 600; color: #666; display: flex; align-items: center; gap: 8px; transition: all 0.2s; width: fit-content; }
+    .archived-toggle:hover { border-color: #f6821f; color: #f6821f; }
+    .archived-table { display: none; margin-top: 12px; }
+    .archived-table.show { display: block; }
   </style>
 </head>
 <body>
   <div class="header">
     <h1>Revenue Essentials — Admin Dashboard</h1>
-    <a href="/export" target="_blank">⬇️ Export CSV</a>
+    <div class="header-actions">
+      <a href="/export" target="_blank">Export CSV</a>
+    </div>
   </div>
   <div class="content">
     <div class="summary">
-      <div class="stat-card"><div class="num">${records.length}</div><div class="label">Total Learners</div></div>
+      <div class="stat-card"><div class="num">${activeRecords.length}</div><div class="label">Active Learners</div></div>
       <div class="stat-card"><div class="num">${completed}</div><div class="label">Fully Complete</div></div>
-      <div class="stat-card"><div class="num">${records.length - completed}</div><div class="label">In Progress</div></div>
-      <div class="stat-card"><div class="num">${records.length > 0 ? Math.round(records.reduce((acc,r)=>{const m1=calcPct(r,'module1'),m2=calcPct(r,'module2'),m3=calcPct(r,'module3'),m4=calcPct(r,'module4');return acc+Math.round((m1+m2+m3+m4)/4)},0)/records.length) : 0}%</div><div class="label">Average Completion</div></div>
+      <div class="stat-card"><div class="num">${activeRecords.length - completed}</div><div class="label">In Progress</div></div>
+      <div class="stat-card"><div class="num">${activeRecords.length > 0 ? Math.round(activeRecords.reduce((acc,r)=>{const m1=calcPct(r,'module1'),m2=calcPct(r,'module2'),m3=calcPct(r,'module3'),m4=calcPct(r,'module4');return acc+Math.round((m1+m2+m3+m4)/4)},0)/activeRecords.length) : 0}%</div><div class="label">Average Completion</div></div>
+      <div class="stat-card"><div class="num">${archivedRecords.length}</div><div class="label">Archived</div></div>
     </div>
     <div class="table-wrap">
       <table>
         <thead>
           <tr>
             <th>Name</th>
+            <th>Start Date</th>
             <th>Module 1</th>
             <th>Module 2</th>
             <th>Module 3</th>
@@ -179,13 +214,55 @@ async function handleAdmin(request, env) {
           </tr>
         </thead>
         <tbody>
-          ${rows.length ? rows : '<tr><td colspan="9" style="text-align:center;color:#aaa;padding:32px">No learners yet — share the bootcamp link to get started!</td></tr>'}
+          ${activeRows.length ? activeRows : '<tr><td colspan="10" style="text-align:center;color:#aaa;padding:32px">No active learners — share the bootcamp link to get started!</td></tr>'}
         </tbody>
       </table>
     </div>
+    ${archivedRecords.length > 0 ? '<div class="archived-section"><button class="archived-toggle" id="archive-toggle">📦 Show Archived (' + archivedRecords.length + ')</button><div class="archived-table" id="archived-table"><div class="table-wrap"><table><thead><tr><th>Name</th><th>Start Date</th><th>Module 1</th><th>Module 2</th><th>Module 3</th><th>Module 4</th><th>Overall</th><th>Complete</th><th>Last Active</th><th>Actions</th></tr></thead><tbody>' + archivedRows + '</tbody></table></div></div></div>' : ''}
   </div>
   <div class="footer">Revenue Essentials Bootcamp · Admin View</div>
   <script>
+    // Archive toggle
+    const toggleBtn = document.getElementById('archive-toggle');
+    const archivedTable = document.getElementById('archived-table');
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', () => {
+        const showing = archivedTable.classList.toggle('show');
+        toggleBtn.textContent = showing ? '📦 Hide Archived (${archivedRecords.length})' : '📦 Show Archived (${archivedRecords.length})';
+      });
+    }
+
+    // Archive/unarchive
+    document.querySelectorAll('.archive-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const name = btn.dataset.name;
+        const isUnarchive = btn.classList.contains('unarchive');
+        const action = isUnarchive ? 'unarchive' : 'archive';
+        if (!confirm((isUnarchive ? 'Unarchive' : 'Archive') + ' "' + name + '"?')) return;
+        btn.disabled = true;
+        btn.textContent = '…';
+        try {
+          const res = await fetch('/admin/archive', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, archived: !isUnarchive })
+          });
+          if (res.ok) {
+            location.reload();
+          } else {
+            alert('Failed to ' + action + ': ' + await res.text());
+            btn.disabled = false;
+            btn.textContent = isUnarchive ? '📥' : '📦';
+          }
+        } catch (e) {
+          alert('Error: ' + e.message);
+          btn.disabled = false;
+          btn.textContent = isUnarchive ? '📥' : '📦';
+        }
+      });
+    });
+
+    // Delete
     document.querySelectorAll('.del-btn').forEach(btn => {
       btn.addEventListener('click', async () => {
         const name = btn.dataset.name;
@@ -236,6 +313,65 @@ async function handleDelete(request, env) {
 
     await env.BOOTCAMP_PROGRESS.delete(name);
     return new Response('Deleted', { status: 200 });
+  } catch (e) {
+    return new Response('Error: ' + e.message, { status: 500 });
+  }
+}
+
+// ── Archive/unarchive learner ──────────────────────────────
+async function handleArchive(request, env) {
+  const authHeader = request.headers.get('Authorization');
+  if (!authHeader || !checkAuth(authHeader)) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  try {
+    const { name, archived } = await request.json();
+    if (!name) {
+      return new Response('Missing name', { status: 400 });
+    }
+
+    const existing = await env.BOOTCAMP_PROGRESS.get(name, { type: 'json' });
+    if (!existing) {
+      return new Response('Learner not found', { status: 404 });
+    }
+
+    existing._archived = !!archived;
+    await env.BOOTCAMP_PROGRESS.put(name, JSON.stringify(existing));
+    return new Response('OK', { status: 200 });
+  } catch (e) {
+    return new Response('Error: ' + e.message, { status: 500 });
+  }
+}
+
+// ── Sync start dates from Google Sheet ────────────────────
+async function handleSyncDates(request, env) {
+  const authHeader = request.headers.get('Authorization');
+  if (!authHeader || !checkAuth(authHeader)) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  try {
+    const { dates } = await request.json();
+    if (!dates || !Array.isArray(dates)) {
+      return new Response('Missing dates array', { status: 400 });
+    }
+
+    let updated = 0;
+    for (const { name, startDate } of dates) {
+      if (!name) continue;
+      const existing = await env.BOOTCAMP_PROGRESS.get(name, { type: 'json' });
+      if (existing) {
+        existing._startDate = startDate || null;
+        await env.BOOTCAMP_PROGRESS.put(name, JSON.stringify(existing));
+        updated++;
+      }
+    }
+
+    return new Response(JSON.stringify({ updated }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
   } catch (e) {
     return new Response('Error: ' + e.message, { status: 500 });
   }
