@@ -1,0 +1,50 @@
+🟢 Fires automatically when you change Status → Confirmed
+#	What fires	Requirement
+1	Welcome Email	Email filled in. Manager CC'd
+2	Sales T&E Email	Sales Essential only + Email filled in. Manager CC'd
+
+🔵 Manual — you click Bootcamp Automation → Create Cohort Invites
+#	What fires	Requirement
+1	Self-Serve 4-day calendar block	Start Date + Revenue Essentials Live Recap Date filled in
+2	Revenue Essentials Live Recap invite (12pm–3pm SGT)	Revenue Essentials Live Recap Date filled in
+3	Sales Essentials Bootcamp invite	Sales Essential + SE Start/End dates filled in
+
+🔵 Manual — you click Bootcamp Automation → Sync Start Dates to Dashboard
+#	What fires	Requirement
+1	Syncs Start Date, Cohort ID, and Role to Admin Dashboard	Full Name + Start Date / Cohort ID / Role filled in
+
+🔵 Manual — you click Bootcamp Automation → Send Completion Emails Now
+#	What fires	Requirement
+1	Sends pending completion emails for validated learners	Learner validated via Admin Dashboard "Send Email" button
+
+🖱️ Manual — you click "Send Email" on the Admin Dashboard
+#	What fires	Requirement
+1	Completion Email ("Congratulations, Bootcamp Graduate!")	Learner at 100% completion. Sent within 5 minutes. Manager CC'd. "Completion Email Sent" marked Yes in sheet
+
+⏰ Time-based — fires automatically on a schedule
+#	What fires	When	Requirement
+1	Recap Reminder email	8am, 1 day before Recap Date	Recap Date filled in. Manager CC'd
+2	Sales Bootcamp Reminder email	8am, 1 day before SE Start	SE Start filled in. Manager CC'd
+3	Know Before You Go email	8am, 3 days before SE Start	SE Start filled in. Manager CC'd
+4	Post Bootcamp email	4pm, on/day after SE End	SE End filled in. Manager CC'd
+5	AI Coach email	4pm, on/day after SE End	SE End filled in + AU/NZ/IN only
+6	🔔 Discovery Pitch reminder calendar invite	4pm, on/day after SE End — 4th business day block	SE End filled in + AU/NZ/IN only. Manager invited
+7	🔔 Solution Pitch reminder calendar invite	4pm, on/day after SE End — 6th business day block	SE End filled in + AU/NZ/IN only. Manager invited
+8	Final Live Roleplay calendar invite	8am, 30-35 days before Final Assessment Due Date, 11am-11:35am SGT weekday	Final Assessment Due Date filled in + AU/NZ/IN only. Manager invited
+9	Day 15 Reminder email	8am, 15 days after SE End	SE End filled in + AU/NZ/IN only. Manager CC'd
+10	Day 30 Escalation email	8am, 30 days after SE End	SE End filled in + AU/NZ/IN only. Manager CC'd
+11	Weekly Manager Report	Every Monday 8am	Manager Name + Email filled in. CC'd to apac-sales-new-hires@
+12	Sync Start Dates, Cohort ID, Role to Dashboard	8am daily	Full Name in sheet matches learner name in dashboard
+13	Completion Email check	Every 5 minutes	Learner validated via Admin Dashboard "Send Email" button
+
+⚡ Fires instantly when AI scores are edited
+#	What fires	When
+1	AI Passed Notification email	Both AI Discovery Score AND AI Solution Pitch Score hit ≥ 80. CC'd to apac-sales-new-hires@
+
+🛠️ Admin Dashboard Features
+#	Feature	Description
+1	Start Date, Cohort, Role columns	Synced from Google Sheet
+2	Archive / Unarchive	Hide completed learners from main view (still in CSV export)
+3	Delete	Permanently remove a learner
+4	Send Email button	Human-validated completion email trigger (100% learners only)
+5	Export CSV	Download all learner data including archived
