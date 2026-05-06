@@ -22,6 +22,11 @@ export default {
       return handleDelete(request, env);
     }
 
+    // ── Validate learner (trigger completion email) ────
+    if (url.pathname === '/admin/validate' && request.method === 'POST') {
+      return handleValidate(request, env);
+    }
+
     // ── Archive/unarchive learner ───────────────────────
     if (url.pathname === '/admin/archive' && request.method === 'POST') {
       return handleArchive(request, env);
@@ -30,6 +35,16 @@ export default {
     // ── Sync start dates from Google Sheet ──────────────
     if (url.pathname === '/api/sync-dates' && request.method === 'POST') {
       return handleSyncDates(request, env);
+    }
+
+    // ── Get validated learners (polled by Apps Script) ──
+    if (url.pathname === '/api/validated' && request.method === 'GET') {
+      return handleGetValidated(request, env);
+    }
+
+    // ── Mark validation email as sent ───────────────────
+    if (url.pathname === '/api/validated' && request.method === 'POST') {
+      return handleMarkEmailSent(request, env);
     }
 
     // ── Export CSV ─────────────────────────────────────
@@ -117,6 +132,14 @@ async function handleAdmin(request, env) {
     const archiveBtn = isArchived
       ? '<button class="archive-btn unarchive" data-name="' + escapedName + '" title="Unarchive">📥</button>'
       : '<button class="archive-btn" data-name="' + escapedName + '" title="Archive">📦</button>';
+    let emailBtn = '';
+    if (complete && r._emailSent) {
+      emailBtn = '<span class="email-sent-badge">Sent</span>';
+    } else if (complete && r._validated && !r._emailSent) {
+      emailBtn = '<span class="email-pending-badge">Pending...</span>';
+    } else if (complete) {
+      emailBtn = '<button class="email-btn" data-name="' + escapedName + '" title="Send completion email to learner &amp; manager">Send Email</button>';
+    }
     return '<tr' + (isArchived ? ' style="opacity:0.55"' : '') + '>' +
       '<td>' + (r._name || 'Unknown') + '</td>' +
       '<td>' + (r._cohortId || 'N/A') + '</td>' +
@@ -128,6 +151,7 @@ async function handleAdmin(request, env) {
       '<td>' + bar(m4) + '</td>' +
       '<td><strong>' + overall + '%</strong></td>' +
       '<td>' + (complete ? '✅' : '❌') + '</td>' +
+      '<td>' + emailBtn + '</td>' +
       '<td>' + (r._lastActive || 'N/A') + '</td>' +
       '<td>' + archiveBtn + ' <button class="del-btn" data-name="' + escapedName + '" title="Remove learner">🗑️</button></td>' +
       '</tr>';
@@ -178,6 +202,10 @@ async function handleAdmin(request, env) {
     .archive-btn:hover { background: #0369a1; color: white; }
     .archive-btn.unarchive { background: #f0fdf4; color: #16a34a; border-color: #86efac; }
     .archive-btn.unarchive:hover { background: #16a34a; color: white; }
+    .email-btn { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.15s; white-space: nowrap; }
+    .email-btn:hover { background: #1d4ed8; color: white; }
+    .email-sent-badge { background: #dcfce7; color: #16a34a; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+    .email-pending-badge { background: #fef9c3; color: #854d0e; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; }
     .archived-section { margin-top: 32px; }
     .archived-toggle { background: white; border: 2px solid #e8e8e8; border-radius: 10px; padding: 12px 20px; cursor: pointer; font-size: 14px; font-weight: 600; color: #666; display: flex; align-items: center; gap: 8px; transition: all 0.2s; width: fit-content; }
     .archived-toggle:hover { border-color: #f6821f; color: #f6821f; }
@@ -214,16 +242,17 @@ async function handleAdmin(request, env) {
             <th>Module 4</th>
             <th>Overall</th>
             <th>Complete</th>
+            <th>Email</th>
             <th>Last Active</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          ${activeRows.length ? activeRows : '<tr><td colspan="12" style="text-align:center;color:#aaa;padding:32px">No active learners — share the bootcamp link to get started!</td></tr>'}
+          ${activeRows.length ? activeRows : '<tr><td colspan="13" style="text-align:center;color:#aaa;padding:32px">No active learners — share the bootcamp link to get started!</td></tr>'}
         </tbody>
       </table>
     </div>
-    ${archivedRecords.length > 0 ? '<div class="archived-section"><button class="archived-toggle" id="archive-toggle">📦 Show Archived (' + archivedRecords.length + ')</button><div class="archived-table" id="archived-table"><div class="table-wrap"><table><thead><tr><th>Name</th><th>Cohort</th><th>Role</th><th>Start Date</th><th>Module 1</th><th>Module 2</th><th>Module 3</th><th>Module 4</th><th>Overall</th><th>Complete</th><th>Last Active</th><th>Actions</th></tr></thead><tbody>' + archivedRows + '</tbody></table></div></div></div>' : ''}
+    ${archivedRecords.length > 0 ? '<div class="archived-section"><button class="archived-toggle" id="archive-toggle">📦 Show Archived (' + archivedRecords.length + ')</button><div class="archived-table" id="archived-table"><div class="table-wrap"><table><thead><tr><th>Name</th><th>Cohort</th><th>Role</th><th>Start Date</th><th>Module 1</th><th>Module 2</th><th>Module 3</th><th>Module 4</th><th>Overall</th><th>Complete</th><th>Email</th><th>Last Active</th><th>Actions</th></tr></thead><tbody>' + archivedRows + '</tbody></table></div></div></div>' : ''}
   </div>
   <div class="footer">Revenue Essentials Bootcamp · Admin View</div>
   <script>
@@ -236,6 +265,34 @@ async function handleAdmin(request, env) {
         toggleBtn.textContent = showing ? '📦 Hide Archived (${archivedRecords.length})' : '📦 Show Archived (${archivedRecords.length})';
       });
     }
+
+    // Send completion email
+    document.querySelectorAll('.email-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const name = btn.dataset.name;
+        if (!confirm('Send completion email to "' + name + '" and CC their manager?')) return;
+        btn.disabled = true;
+        btn.textContent = '…';
+        try {
+          const res = await fetch('/admin/validate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name })
+          });
+          if (res.ok) {
+            btn.outerHTML = '<span class="email-pending-badge">Pending...</span>';
+          } else {
+            alert('Failed: ' + await res.text());
+            btn.disabled = false;
+            btn.textContent = 'Send Email';
+          }
+        } catch (e) {
+          alert('Error: ' + e.message);
+          btn.disabled = false;
+          btn.textContent = 'Send Email';
+        }
+      });
+    });
 
     // Archive/unarchive
     document.querySelectorAll('.archive-btn').forEach(btn => {
@@ -318,6 +375,88 @@ async function handleDelete(request, env) {
 
     await env.BOOTCAMP_PROGRESS.delete(name);
     return new Response('Deleted', { status: 200 });
+  } catch (e) {
+    return new Response('Error: ' + e.message, { status: 500 });
+  }
+}
+
+// ── Validate learner (trigger completion email) ───────────
+async function handleValidate(request, env) {
+  const authHeader = request.headers.get('Authorization');
+  if (!authHeader || !checkAuth(authHeader)) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  try {
+    const { name } = await request.json();
+    if (!name) {
+      return new Response('Missing name', { status: 400 });
+    }
+
+    const existing = await env.BOOTCAMP_PROGRESS.get(name, { type: 'json' });
+    if (!existing) {
+      return new Response('Learner not found', { status: 404 });
+    }
+
+    existing._validated = true;
+    existing._validatedAt = new Date().toISOString();
+    existing._emailSent = false;
+    await env.BOOTCAMP_PROGRESS.put(name, JSON.stringify(existing));
+    return new Response('OK', { status: 200 });
+  } catch (e) {
+    return new Response('Error: ' + e.message, { status: 500 });
+  }
+}
+
+// ── Get validated learners pending email (polled by Apps Script) ──
+async function handleGetValidated(request, env) {
+  const apiKey = request.headers.get('X-API-Key');
+  if (!apiKey || apiKey !== SYNC_API_KEY) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  try {
+    const list = await env.BOOTCAMP_PROGRESS.list();
+    const pending = [];
+
+    for (const key of list.keys) {
+      const data = await env.BOOTCAMP_PROGRESS.get(key.name, { type: 'json' });
+      if (data && data._validated && data._emailSent === false) {
+        pending.push({ name: data._name || key.name, validatedAt: data._validatedAt });
+      }
+    }
+
+    return new Response(JSON.stringify({ pending }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  } catch (e) {
+    return new Response('Error: ' + e.message, { status: 500 });
+  }
+}
+
+// ── Mark validation email as sent ─────────────────────────
+async function handleMarkEmailSent(request, env) {
+  const apiKey = request.headers.get('X-API-Key');
+  if (!apiKey || apiKey !== SYNC_API_KEY) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  try {
+    const { name } = await request.json();
+    if (!name) {
+      return new Response('Missing name', { status: 400 });
+    }
+
+    const existing = await env.BOOTCAMP_PROGRESS.get(name, { type: 'json' });
+    if (!existing) {
+      return new Response('Learner not found', { status: 404 });
+    }
+
+    existing._emailSent = true;
+    existing._emailSentAt = new Date().toISOString();
+    await env.BOOTCAMP_PROGRESS.put(name, JSON.stringify(existing));
+    return new Response('OK', { status: 200 });
   } catch (e) {
     return new Response('Error: ' + e.message, { status: 500 });
   }
