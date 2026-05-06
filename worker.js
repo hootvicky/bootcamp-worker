@@ -119,6 +119,8 @@ async function handleAdmin(request, env) {
       : '<button class="archive-btn" data-name="' + escapedName + '" title="Archive">📦</button>';
     return '<tr' + (isArchived ? ' style="opacity:0.55"' : '') + '>' +
       '<td>' + (r._name || 'Unknown') + '</td>' +
+      '<td>' + (r._cohortId || 'N/A') + '</td>' +
+      '<td>' + (r._role || 'N/A') + '</td>' +
       '<td>' + (r._startDate || 'N/A') + '</td>' +
       '<td>' + bar(m1) + '</td>' +
       '<td>' + bar(m2) + '</td>' +
@@ -153,7 +155,7 @@ async function handleAdmin(request, env) {
     .header h1 { color: white; font-size: 20px; font-weight: 700; }
     .header-actions { display: flex; gap: 8px; align-items: center; }
     .header-actions a, .header-actions button { background: white; color: #f6821f; padding: 8px 20px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 14px; border: none; cursor: pointer; }
-    .content { max-width: 1500px; margin: 32px auto; padding: 0 32px; }
+    .content { max-width: 1600px; margin: 32px auto; padding: 0 32px; }
     .summary { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
     .stat-card { background: white; border-radius: 12px; padding: 20px 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); flex: 1; min-width: 160px; }
     .stat-card .num { font-size: 36px; font-weight: 700; color: #f6821f; }
@@ -203,6 +205,8 @@ async function handleAdmin(request, env) {
         <thead>
           <tr>
             <th>Name</th>
+            <th>Cohort</th>
+            <th>Role</th>
             <th>Start Date</th>
             <th>Module 1</th>
             <th>Module 2</th>
@@ -215,11 +219,11 @@ async function handleAdmin(request, env) {
           </tr>
         </thead>
         <tbody>
-          ${activeRows.length ? activeRows : '<tr><td colspan="10" style="text-align:center;color:#aaa;padding:32px">No active learners — share the bootcamp link to get started!</td></tr>'}
+          ${activeRows.length ? activeRows : '<tr><td colspan="12" style="text-align:center;color:#aaa;padding:32px">No active learners — share the bootcamp link to get started!</td></tr>'}
         </tbody>
       </table>
     </div>
-    ${archivedRecords.length > 0 ? '<div class="archived-section"><button class="archived-toggle" id="archive-toggle">📦 Show Archived (' + archivedRecords.length + ')</button><div class="archived-table" id="archived-table"><div class="table-wrap"><table><thead><tr><th>Name</th><th>Start Date</th><th>Module 1</th><th>Module 2</th><th>Module 3</th><th>Module 4</th><th>Overall</th><th>Complete</th><th>Last Active</th><th>Actions</th></tr></thead><tbody>' + archivedRows + '</tbody></table></div></div></div>' : ''}
+    ${archivedRecords.length > 0 ? '<div class="archived-section"><button class="archived-toggle" id="archive-toggle">📦 Show Archived (' + archivedRecords.length + ')</button><div class="archived-table" id="archived-table"><div class="table-wrap"><table><thead><tr><th>Name</th><th>Cohort</th><th>Role</th><th>Start Date</th><th>Module 1</th><th>Module 2</th><th>Module 3</th><th>Module 4</th><th>Overall</th><th>Complete</th><th>Last Active</th><th>Actions</th></tr></thead><tbody>' + archivedRows + '</tbody></table></div></div></div>' : ''}
   </div>
   <div class="footer">Revenue Essentials Bootcamp · Admin View</div>
   <script>
