@@ -27,6 +27,11 @@ export default {
       return handleValidate(request, env);
     }
 
+    // ── Remind learner (trigger 48hr reminder email) ───
+    if (url.pathname === '/admin/remind' && request.method === 'POST') {
+      return handleRemind(request, env);
+    }
+
     // ── Archive/unarchive learner ───────────────────────
     if (url.pathname === '/admin/archive' && request.method === 'POST') {
       return handleArchive(request, env);
@@ -139,6 +144,12 @@ async function handleAdmin(request, env) {
       emailBtn = '<span class="email-pending-badge">Pending...</span>';
     } else if (complete) {
       emailBtn = '<button class="email-btn" data-name="' + escapedName + '" title="Send completion email to learner &amp; manager">Send Email</button>';
+    } else if (!complete && r._reminderEmailSent) {
+      emailBtn = '<span class="reminder-sent-badge">Reminded</span>';
+    } else if (!complete && r._reminded && !r._reminderEmailSent) {
+      emailBtn = '<span class="email-pending-badge">Pending...</span>';
+    } else if (!complete && overall > 0) {
+      emailBtn = '<button class="remind-btn" data-name="' + escapedName + '" title="Send 48hr reminder to learner &amp; manager">Remind</button>';
     }
     return '<tr' + (isArchived ? ' style="opacity:0.55"' : '') + '>' +
       '<td>' + (r._name || 'Unknown') + '</td>' +
@@ -206,6 +217,9 @@ async function handleAdmin(request, env) {
     .email-btn:hover { background: #1d4ed8; color: white; }
     .email-sent-badge { background: #dcfce7; color: #16a34a; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; }
     .email-pending-badge { background: #fef9c3; color: #854d0e; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+    .remind-btn { background: #fff7ed; color: #c2410c; border: 1px solid #fdba74; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.15s; white-space: nowrap; }
+    .remind-btn:hover { background: #c2410c; color: white; }
+    .reminder-sent-badge { background: #fff7ed; color: #c2410c; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; }
     .archived-section { margin-top: 32px; }
     .archived-toggle { background: white; border: 2px solid #e8e8e8; border-radius: 10px; padding: 12px 20px; cursor: pointer; font-size: 14px; font-weight: 600; color: #666; display: flex; align-items: center; gap: 8px; transition: all 0.2s; width: fit-content; }
     .archived-toggle:hover { border-color: #f6821f; color: #f6821f; }
@@ -290,6 +304,34 @@ async function handleAdmin(request, env) {
           alert('Error: ' + e.message);
           btn.disabled = false;
           btn.textContent = 'Send Email';
+        }
+      });
+    });
+
+    // Send 48hr reminder
+    document.querySelectorAll('.remind-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const name = btn.dataset.name;
+        if (!confirm('Send 48-hour reminder to "' + name + '" and CC their manager?')) return;
+        btn.disabled = true;
+        btn.textContent = '…';
+        try {
+          const res = await fetch('/admin/remind', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name })
+          });
+          if (res.ok) {
+            btn.outerHTML = '<span class="email-pending-badge">Pending...</span>';
+          } else {
+            alert('Failed: ' + await res.text());
+            btn.disabled = false;
+            btn.textContent = 'Remind';
+          }
+        } catch (e) {
+          alert('Error: ' + e.message);
+          btn.disabled = false;
+          btn.textContent = 'Remind';
         }
       });
     });
@@ -401,6 +443,34 @@ async function handleValidate(request, env) {
     existing._validated = true;
     existing._validatedAt = new Date().toISOString();
     existing._emailSent = false;
+    await env.BOOTCAMP_PROGRESS.put(name, JSON.stringify(existing));
+    return new Response('OK', { status: 200 });
+  } catch (e) {
+    return new Response('Error: ' + e.message, { status: 500 });
+  }
+}
+
+// ── Remind learner (trigger 48hr reminder email) ──────────
+async function handleRemind(request, env) {
+  const authHeader = request.headers.get('Authorization');
+  if (!authHeader || !checkAuth(authHeader)) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  try {
+    const { name } = await request.json();
+    if (!name) {
+      return new Response('Missing name', { status: 400 });
+    }
+
+    const existing = await env.BOOTCAMP_PROGRESS.get(name, { type: 'json' });
+    if (!existing) {
+      return new Response('Learner not found', { status: 404 });
+    }
+
+    existing._reminded = true;
+    existing._remindedAt = new Date().toISOString();
+    existing._reminderEmailSent = false;
     await env.BOOTCAMP_PROGRESS.put(name, JSON.stringify(existing));
     return new Response('OK', { status: 200 });
   } catch (e) {
